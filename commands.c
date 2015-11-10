@@ -4,8 +4,7 @@
 
 void cmd_reprogram(void)
 {
-    char msg[] = "Loading bootloader in 3 seconds.";
-    usart_transmit_block(sizeof(msg), msg);
+    printf("Loading bootloader in 3 seconds.");
     _delay_ms(3000);
 
     // TODO: obviously extract that address somewhere.
