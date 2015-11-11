@@ -1,15 +1,15 @@
+#include "config.h"
 #include "usart.h"
 
 #include <util/delay.h>
 
 void cmd_reprogram(void)
 {
-    printf("Loading bootloader in 3 seconds.");
+    printf("Jumping to bootloader in 3 seconds." NEWLINE);
     _delay_ms(3000);
 
-    // TODO: obviously extract that address somewhere.
     typedef void (* fn_ptr_t) (void);
-    fn_ptr_t my_ptr = (void *)0x1E00;
+    fn_ptr_t my_ptr = (void *)BOOTLOAD;
     my_ptr();
 }
 
