@@ -1,7 +1,7 @@
 PROJNAME        = micli
-UC              = atmega8
+UC              = atmega168
 HEXFORMAT       = binary
-BOOTLOAD        = 0x1E00 # byte address, start of bootlaoder
+BOOTLOAD        = 0x3E00 # byte address, start of bootlaoder
 
 LDFLAGS         = -lm -lc -Wall -mmcu=$(UC)
 CFLAGS          = -fpack-struct -Os -mcall-prologues -mmcu=$(UC)
