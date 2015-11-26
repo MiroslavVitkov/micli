@@ -1,6 +1,7 @@
 #include "config.h"
 #include "usart.h"
 
+#include <stdio.h>
 #include <util/delay.h>
 
 void cmd_reprogram(void)
@@ -35,12 +36,12 @@ const command_t Commands[] =
 // TODO: use https://en.wikipedia.org/wiki/Radix_tree
 void listen_for_command(void)
 {
-    while (usart_receive() != '!');
+    while (getc(stdin) != '!');
     for(int i = 0; i < sizeof(Commands) / sizeof(command_t); ++i)
     {
         for(int j = 0; j < Commands[i].len; ++j)
         {
-            char in = usart_receive();
+            char in = getc(stdin);
             if(in != Commands[i].msg[j]) break;                   // Continue to test next command.
             if(j == Commands[i].len-1)
             {
