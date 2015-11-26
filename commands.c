@@ -4,17 +4,12 @@
 #include <stdio.h>
 #include <util/delay.h>
 
-void cmd_reprogram(void)
-{
-    printf("Jumping to bootloader in 3 seconds." NEWLINE);
-    _delay_ms(3000);
 
-    typedef void (* fn_ptr_t) (void);
-    fn_ptr_t my_ptr = (void *)BOOTLOAD;
-    my_ptr();
-}
+// Function declarations.
+void cmd_reprogram(void);
 
 
+// List of user commands.
 typedef void (* fn_ptr_t) (void);
 typedef struct command
 {
@@ -27,6 +22,18 @@ const command_t Commands[] =
 {
     DECLARE_COMMAND(reprogram)
 };
+
+
+// Command handlers.
+void cmd_reprogram(void)
+{
+    printf("Jumping to bootloader in 3 seconds." NEWLINE);
+    _delay_ms(3000);
+
+    typedef void (* fn_ptr_t) (void);
+    fn_ptr_t my_ptr = (void *)BOOTLOAD;
+    my_ptr();
+}
 
 
 // Listens to usart until a valid command is received.
