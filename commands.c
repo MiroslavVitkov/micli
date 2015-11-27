@@ -1,8 +1,14 @@
 #include "config.h"
 #include "usart.h"
 
+#include <assert.h>
 #include <stdio.h>
+#include <string.h>
 #include <util/delay.h>
+
+
+// Quieck hack for assert() to work.
+#define abort() printf("CRITICAL ERROR")
 
 
 // Function declarations.
@@ -15,9 +21,10 @@ typedef struct command
 {
     const fn_ptr_t handler;
     const char *msg;
-    const unsigned len;           // Without the terminating '\0'.
+    const unsigned len;                          // Without the terminating '\0'.
 } command_t;
 #define DECLARE_COMMAND(name) {cmd_##name, #name, sizeof(#name)-1},
+#define MAX_CMD_LEN 16                           // In bytes, includeing whitespaces and parameters.
 const command_t Commands[] =
 {
     DECLARE_COMMAND(reprogram)
@@ -36,32 +43,71 @@ void cmd_reprogram(void)
 }
 
 
-// Listens to usart until a valid command is received.
+// Listens to stdin until a valid command is received.
 // Commands have the format:
-// !command parameters
-// Blocking!
-// TODO: use https://en.wikipedia.org/wiki/Radix_tree
-void listen_for_command(void)
+// !command parameters ENTER
+// buff[] must be of size MAX_CMD_LEN
+void listen_for_command(char cmd_buff[])
 {
-    while (getc(stdin) != '!');
-    for(int i = 0; i < sizeof(Commands) / sizeof(command_t); ++i)
+    memset(cmd_buff, 0, MAX_CMD_LEN);
+
+    // Wait for a string of the type "!.........\n" and record it in a buffer.
+    while (getchar() != '!');
+    for(int i = 0;; ++i)
     {
-        for(int j = 0; j < Commands[i].len; ++j)
+        char c = getchar();
+        if(c == '\r' || c == '\n')               // If on Windows, we got an '\r' before that.
         {
-            char in = getc(stdin);
-            if(in != Commands[i].msg[j]) break;                   // Continue to test next command.
-            if(j == Commands[i].len-1)
-            {
-                cmd_reprogram(); //Commands[i].handler();
-                return;
-            }
+            return;
+        }
+        else
+        {
+            assert(i < MAX_CMD_LEN);
+            cmd_buff[i] = c;
         }
     }
 }
 
 
+// buff[] must be of size MAX_CMD_LEN
+// Returns 0 if command handler was called and non-zero in case of error.
+int execute_command(char cmd_buff[])
+{
+    // Try to match each known command against the buffer.
+    // Stop on first match.
+    // Call command handler and return.
+    // TODO: use https://en.wikipedia.org/wiki/Radix_tree
+    for(int i = 0; i < sizeof(Commands) / sizeof(command_t); ++i)
+    {
+        for(int j = 0; j < Commands[i].len; ++j)
+        {
+            char c = cmd_buff[j];
+            if(c != Commands[i].msg[j]) break;   // Continue to test next command.
+            if(j == Commands[i].len - 1)         // j is counted from 0, while len is counter from 1.
+            {
+                Commands[i].handler();
+                return 0;
+            }
+        }
+    }
+    return -1;                                   // No command matched.
+}
+
+
+// Use this main() to test the functions in the file.
 void main(void)
 {
     usart_init();
-    listen_for_command();
+    printf("Program start." NEWLINE);
+
+    char cmd_buff[MAX_CMD_LEN];
+    while(1)
+    {
+        listen_for_command(cmd_buff);
+        int err = execute_command(cmd_buff);
+        if(err)
+        {
+            printf("Unknown command." NEWLINE);
+        }
+    }
 }
