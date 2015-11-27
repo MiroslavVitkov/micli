@@ -11,7 +11,7 @@ CFLAGS         += -DBOOTLOAD=$(BOOTLOAD)
 
 all:
 	# Compile.
-	avr-gcc $(CFLAGS) commands.c -c -o build/commands.o
+	avr-gcc $(CFLAGS) src/commands.c -c -o build/commands.o
 
 	# Link.
 	avr-gcc $(LDFLAGS) $(LDFLAGS) build/commands.o -o build/$(PROJNAME).elf
