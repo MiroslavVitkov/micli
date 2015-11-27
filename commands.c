@@ -12,6 +12,7 @@
 
 
 // Function declarations.
+void cmd_help(void);
 void cmd_reprogram(void);
 
 
@@ -27,11 +28,28 @@ typedef struct command
 #define MAX_CMD_LEN 16                           // In bytes, includeing whitespaces and parameters.
 const command_t Commands[] =
 {
+    DECLARE_COMMAND(help)
     DECLARE_COMMAND(reprogram)
 };
 
 
 // Command handlers.
+void cmd_help(void)
+{
+    printf("Commands have the format:" NEWLINE);
+    printf("!command parameters ENTER" NEWLINE);
+    printf("Parameters are separated by spaces; total line length must not exceed %i characters" NEWLINE, MAX_CMD_LEN);
+
+    const command_t *it = Commands;
+    const command_t *it_end = Commands + (sizeof(Commands) / sizeof(command_t));
+    for(; it < it_end ; ++it)
+    {
+        printf("%s, ", it->msg);
+    }
+    printf(NEWLINE);
+}
+
+
 void cmd_reprogram(void)
 {
     printf("Jumping to bootloader in 3 seconds." NEWLINE);
