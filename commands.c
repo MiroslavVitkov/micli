@@ -56,7 +56,7 @@ void cmd_reprogram(void)
     _delay_ms(3000);
 
     typedef void (* fn_ptr_t) (void);
-    fn_ptr_t my_ptr = (void *)BOOTLOAD;
+    fn_ptr_t my_ptr = (fn_ptr_t)BOOTLOAD;
     my_ptr();
 }
 

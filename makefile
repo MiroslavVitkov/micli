@@ -6,7 +6,7 @@ BOOTLOAD        = 0x3E00 # byte address, start of bootlaoder
 LDFLAGS         = -lm -lc -Wall -mmcu=$(UC)
 CFLAGS          = -fpack-struct -Os -mcall-prologues -mmcu=$(UC)
 CFLAGS         += -finline-functions --std=c11
-CFLAGS         += -Wall -Winline -Wstrict-prototypes -Wno-main -Wfatal-errors
+CFLAGS         += -Wall -Winline -Wstrict-prototypes -Wno-main -Wfatal-errors -Wpedantic
 CFLAGS         += -DBOOTLOAD=$(BOOTLOAD)
 
 all:
