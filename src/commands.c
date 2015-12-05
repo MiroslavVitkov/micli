@@ -1,5 +1,6 @@
 #include "config.h"
 #include "usart.h"
+#include "commands.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -25,7 +26,6 @@ typedef struct command
     const unsigned len;                          // Without the terminating '\0'.
 } command_t;
 #define DECLARE_COMMAND(name) {cmd_##name, #name, sizeof(#name)-1},
-#define MAX_CMD_LEN 16                           // In bytes, includeing whitespaces and parameters.
 const command_t Commands[] =
 {
     DECLARE_COMMAND(help)
@@ -113,6 +113,7 @@ int execute_command(char cmd_buff[])
 
 
 // Use this main() to test the functions in the file.
+/*
 void main(void)
 {
     usart_init();
@@ -129,3 +130,4 @@ void main(void)
         }
     }
 }
+*/

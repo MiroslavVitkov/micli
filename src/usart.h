@@ -1,3 +1,7 @@
+// Call usart_init() to make stdin and stdout point to the debug usart.
+// From then on printf(), getchar() etc. functions read/write to the usart.
+// Use constant NEWLINE for cross-patform compatability.
+
 #ifndef _USART_H_
 #define _USART_H_
 
@@ -18,7 +22,9 @@ enum
     ASCII_NACK = 0x15,
 };
 
-FILE fileInOutErr;
+
+int put_char(char c, FILE *out);
+int get_char(FILE *in);
 inline void usart_init(void)
 {
     UBRR0H = UBRRH_VALUE;                        //Set baud rate.
@@ -31,6 +37,8 @@ inline void usart_init(void)
     UCSR0B = (1<<RXEN0)|(1<<TXEN0);              // Enable receiver and transmitter
     UCSR0C = (3<<UCSZ00);                        // Set frame format: 8 data bits, 1 stop bit, no parity aka 8N1
 
+    // Make stdin, stdout and stderr point to the debug usart.
+    static FILE fileInOutErr = FDEV_SETUP_STREAM(put_char, get_char, _FDEV_SETUP_RW);
     stdin = &fileInOutErr;
     stdout = &fileInOutErr;
 }
@@ -65,22 +73,6 @@ inline void usart_flush( void )
     (void) dummy;
     while ( UCSR0A & (1<<RXC0) ) dummy = UDR0;
 }
-
-
-//make stdin, stdout and stderr point to the debug usart
-int put_char(char c, FILE *out)
-{
-    usart_transmit(c);
-    return 0;                                    //SUCCESS
-}
-
-int get_char(FILE *in)
-{
-    unsigned char c;
-    c = usart_receive();
-    return (int)c;                               //SUCCESS
-}
-FILE fileInOutErr = FDEV_SETUP_STREAM(put_char, get_char, _FDEV_SETUP_RW);
 
 
 #endif //#ifndef _USART_H_

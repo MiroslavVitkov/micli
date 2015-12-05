@@ -11,10 +11,12 @@ CFLAGS         += -DBOOTLOAD=$(BOOTLOAD)
 
 all:
 	# Compile.
+	avr-gcc $(CFLAGS) src/main.c -c -o  build/main.o
+	avr-gcc $(CFLAGS) src/usart.c -c -o build/usart.o
 	avr-gcc $(CFLAGS) src/commands.c -c -o build/commands.o
 
 	# Link.
-	avr-gcc $(LDFLAGS) $(LDFLAGS) build/commands.o -o build/$(PROJNAME).elf
+	avr-gcc $(LDFLAGS) $(LDFLAGS) build/main.o build/usart.o build/commands.o -o build/$(PROJNAME).elf
 	avr-objcopy -j .text -j .data -O $(HEXFORMAT) build/$(PROJNAME).elf build/$(PROJNAME).bin
 
 	# Report.
