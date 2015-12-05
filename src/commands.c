@@ -38,7 +38,7 @@ void cmd_help(void)
 {
     printf("Commands have the format:" NEWLINE);
     printf("!command parameters ENTER" NEWLINE);
-    printf("Parameters are separated by spaces; total line length must not exceed %i characters" NEWLINE, MAX_CMD_LEN);
+    printf("Parameters are separated by spaces; total line length must not exceed %i characters." NEWLINE, MAX_CMD_LEN);
 
     const command_t *it = Commands;
     const command_t *it_end = Commands + (sizeof(Commands) / sizeof(command_t));
@@ -46,7 +46,7 @@ void cmd_help(void)
     {
         printf("%s, ", it->msg);
     }
-    printf(NEWLINE);
+    printf(NEWLINE NEWLINE);                     // One blank line after output.
 }
 
 
