@@ -1,6 +1,8 @@
 // Call usart_init() to make stdin and stdout point to the debug usart.
 // From then on printf(), getchar() etc. functions read/write to the usart.
 // Use constant NEWLINE for cross-patform compatability.
+// Used hardware: TX and RX pins, USART0.
+// Used interrupts: none.
 
 #ifndef _USART_H_
 #define _USART_H_
