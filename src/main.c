@@ -9,7 +9,7 @@ void main(void)
     usart_init();
     printf("Program start." NEWLINE);
 
-    enable_int1();
+    zcd_calibrate();
 
     char cmd_buff[MAX_CMD_LEN];
     while(1)
