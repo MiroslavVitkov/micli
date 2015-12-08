@@ -12,11 +12,13 @@ void main(void)
     char cmd_buff[MAX_CMD_LEN];
     while(1)
     {
-        listen_for_command(cmd_buff);
-        int err = execute_command(cmd_buff);
+        int len;
+        listen_for_command(cmd_buff, &len);
+        int err = execute_command(cmd_buff, len);
         if(err)
         {
-            printf("Unknown command." NEWLINE);
+            cmd_buff[len] = '\0';
+            printf("Unknown command: %s." NEWLINE, cmd_buff);
         }
     }
 }

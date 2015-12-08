@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <util/delay.h>
 
 
@@ -14,14 +15,14 @@
 
 
 // Function declarations.
-void cmd_help(void*);
-void cmd_reprogram(void*);
-void cmd_zcd_run(void*);
-void cmd_zcd_set(void*);
+void cmd_help(char*, int);
+void cmd_reprogram(char*, int);
+void cmd_zcd_run(char*, int);
+void cmd_zcd_set(char*, int);
 
 
 // List of user commands.
-typedef void (* fn_ptr_t) (void *context);
+typedef void (* fn_ptr_t) (char *cmdline, int bytes);
 typedef struct command
 {
     const fn_ptr_t handler;
@@ -39,7 +40,7 @@ const command_t Commands[] =
 
 
 // Command handlers.
-void cmd_help(void *context)
+void cmd_help(char *cmdline, int bytes)
 {
     printf("Commands have the format:" NEWLINE);
     printf("!command parameters ENTER" NEWLINE);
@@ -55,7 +56,7 @@ void cmd_help(void *context)
 }
 
 
-void cmd_reprogram(void *context)
+void cmd_reprogram(char *cmdline, int bytes)
 {
     printf("Jumping to bootloader in 3 seconds." NEWLINE);
     _delay_ms(3000);
@@ -67,7 +68,7 @@ void cmd_reprogram(void *context)
 
 
 // Runs the zero-cross detector and, subsequencly, the timer for the tric control.
-void cmd_zcd_run(void *context)
+void cmd_zcd_run(char *cmdline, int bytes)
 {
     zcd_time_t zcd_calibration = zcd_calibrate();
     zcd_adjust_setpoint(ZCD_PROC_VAL_MAX / 3);   // Example!
@@ -75,9 +76,13 @@ void cmd_zcd_run(void *context)
 }
 
 
-void cmd_zcd_set(void *context)
+void cmd_zcd_set(char *cmdline, int bytes)
 {
-    zcd_adjust_setpoint(1000);                   // Example!
+    cmdline[bytes] = '\0';
+    int number = atoi(cmdline+sizeof("zcd_run"));
+    zcd_adjust_setpoint(number);
+    printf("Triac output configuread at %u from %u.", number, ZCD_PROC_VAL_MAX);
+    printf(NEWLINE NEWLINE);
 }
 
 
@@ -85,17 +90,19 @@ void cmd_zcd_set(void *context)
 // Commands have the format:
 // !command parameters ENTER
 // buff[] must be of size MAX_CMD_LEN
-void listen_for_command(char cmd_buff[])
+void listen_for_command(char cmd_buff[], int *bytes)
 {
     memset(cmd_buff, 0, MAX_CMD_LEN);
 
     // Wait for a string of the type "!.........\n" and record it in a buffer.
     while (getchar() != '!');
+
     for(int i = 0;; ++i)
     {
         char c = getchar();
         if(c == '\r' || c == '\n')
         {
+            *bytes = i + 1;                      // Without leading '!'.
             return;
         }
         else
@@ -109,7 +116,7 @@ void listen_for_command(char cmd_buff[])
 
 // buff[] must be of size MAX_CMD_LEN
 // Returns 0 if command handler was called and non-zero in case of error.
-int execute_command(char cmd_buff[])
+int execute_command(char cmd_buff[], int bytes)
 {
     // Try to match each known command against the buffer.
     // Stop on first match.
@@ -123,31 +130,10 @@ int execute_command(char cmd_buff[])
             if(c != Commands[i].msg[j]) break;   // Continue to test next command.
             if(j == Commands[i].len - 1)         // j is counted from 0, while len is counter from 1.
             {
-                Commands[i].handler(cmd_buff);
+                Commands[i].handler(cmd_buff, bytes);
                 return 0;
             }
         }
     }
     return -1;                                   // No command matched.
 }
-
-
-// Use this main() to test the functions in the file.
-/*
-void main(void)
-{
-    usart_init();
-    printf("Program start." NEWLINE);
-
-    char cmd_buff[MAX_CMD_LEN];
-    while(1)
-    {
-        listen_for_command(cmd_buff);
-        int err = execute_command(cmd_buff);
-        if(err)
-        {
-            printf("Unknown command." NEWLINE);
-        }
-    }
-}
-*/
