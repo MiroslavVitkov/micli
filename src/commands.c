@@ -16,7 +16,8 @@
 // Function declarations.
 void cmd_help(void);
 void cmd_reprogram(void);
-void cmd_zcd(void);
+void cmd_zcd_run(void);
+void cmd_zcd_set(void);
 
 
 // List of user commands.
@@ -32,7 +33,8 @@ const command_t Commands[] =
 {
     DECLARE_COMMAND(help)
     DECLARE_COMMAND(reprogram)
-    DECLARE_COMMAND(zcd)
+    DECLARE_COMMAND(zcd_run)
+    DECLARE_COMMAND(zcd_set)
 };
 
 
@@ -65,11 +67,17 @@ void cmd_reprogram(void)
 
 
 // Runs the zero-cross detector and, subsequencly, the timer for the tric control.
-void cmd_zcd(void)
+void cmd_zcd_run(void)
 {
     zcd_time_t zcd_calibration = zcd_calibrate();
     zcd_adjust_setpoint(ZCD_PROC_VAL_MAX / 3);   // Example!
     zcd_run(zcd_calibration);
+}
+
+
+void cmd_zcd_set()
+{
+    zcd_adjust_setpoint(1000);                   // Example!
 }
 
 
