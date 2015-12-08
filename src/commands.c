@@ -14,14 +14,14 @@
 
 
 // Function declarations.
-void cmd_help(void);
-void cmd_reprogram(void);
-void cmd_zcd_run(void);
-void cmd_zcd_set(void);
+void cmd_help(void*);
+void cmd_reprogram(void*);
+void cmd_zcd_run(void*);
+void cmd_zcd_set(void*);
 
 
 // List of user commands.
-typedef void (* fn_ptr_t) (void);
+typedef void (* fn_ptr_t) (void *context);
 typedef struct command
 {
     const fn_ptr_t handler;
@@ -39,7 +39,7 @@ const command_t Commands[] =
 
 
 // Command handlers.
-void cmd_help(void)
+void cmd_help(void *context)
 {
     printf("Commands have the format:" NEWLINE);
     printf("!command parameters ENTER" NEWLINE);
@@ -55,7 +55,7 @@ void cmd_help(void)
 }
 
 
-void cmd_reprogram(void)
+void cmd_reprogram(void *context)
 {
     printf("Jumping to bootloader in 3 seconds." NEWLINE);
     _delay_ms(3000);
@@ -67,7 +67,7 @@ void cmd_reprogram(void)
 
 
 // Runs the zero-cross detector and, subsequencly, the timer for the tric control.
-void cmd_zcd_run(void)
+void cmd_zcd_run(void *context)
 {
     zcd_time_t zcd_calibration = zcd_calibrate();
     zcd_adjust_setpoint(ZCD_PROC_VAL_MAX / 3);   // Example!
@@ -75,7 +75,7 @@ void cmd_zcd_run(void)
 }
 
 
-void cmd_zcd_set()
+void cmd_zcd_set(void *context)
 {
     zcd_adjust_setpoint(1000);                   // Example!
 }
@@ -123,7 +123,7 @@ int execute_command(char cmd_buff[])
             if(c != Commands[i].msg[j]) break;   // Continue to test next command.
             if(j == Commands[i].len - 1)         // j is counted from 0, while len is counter from 1.
             {
-                Commands[i].handler();
+                Commands[i].handler(cmd_buff);
                 return 0;
             }
         }
