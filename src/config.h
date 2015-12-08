@@ -30,4 +30,7 @@ enum
 };
 typedef int8_t error_t;
 
+#define HEATER_PIN  PD6
+#define HEATER_PORT PORTD
+
 #endif	//#ifndef _CONFIG_H_

@@ -8,7 +8,13 @@
 
 
 typedef uint16_t time_t;
+typedef uint16_t proc_val_t;
+enum {PROC_VAL_MAX = UINT16_MAX};
+bool should_turn_on(void);
+
+
 static volatile bool g_event_captured = false;
+static proc_val_t g_setpoint;
 
 
 ISR(TIMER1_CAPT_vect)
@@ -19,7 +25,14 @@ ISR(TIMER1_CAPT_vect)
 
 ISR(TIMER1_COMPA_vect)
 {
-
+    if(should_turn_on())
+    {
+        HEATER_PORT |= (1<<HEATER_PIN);
+    }
+    else
+    {
+        HEATER_PORT &= ~(1<<HEATER_PIN);
+    }
 }
 
 
@@ -67,3 +80,28 @@ void zcd_calibrate(void)
     time_t falling_to_zc = half_period - zc_to_falling;
     start_timer1_ctc(falling_to_zc);
 }
+
+
+void zcd_adjust_setpoint(proc_val_t setpoint)
+{
+    g_setpoint = setpoint;
+}
+
+
+// Decide if this particular half-wave shoudl be turned on. Further discussion:
+// http://programmers.stackexchange.com/questions/304546/algorithm-to-express-an-integer-as-a-sum-of-some-binary-numbers
+bool should_turn_on()
+{
+    static uint32_t acu = 0;
+    acu += g_setpoint;
+    if(acu > PROC_VAL_MAX)
+    {
+        acu &= PROC_VAL_MAX;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
