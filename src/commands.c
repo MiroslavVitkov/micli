@@ -1,6 +1,7 @@
 #include "config.h"
 #include "usart.h"
 #include "commands.h"
+#include "zcd.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -15,6 +16,7 @@
 // Function declarations.
 void cmd_help(void);
 void cmd_reprogram(void);
+void cmd_zcd(void);
 
 
 // List of user commands.
@@ -30,6 +32,7 @@ const command_t Commands[] =
 {
     DECLARE_COMMAND(help)
     DECLARE_COMMAND(reprogram)
+    DECLARE_COMMAND(zcd)
 };
 
 
@@ -58,6 +61,15 @@ void cmd_reprogram(void)
     typedef void (* fn_ptr_t) (void);
     fn_ptr_t my_ptr = (fn_ptr_t)BOOTLOAD;
     my_ptr();
+}
+
+
+// Runs the zero-cross detector and, subsequencly, the timer for the tric control.
+void cmd_zcd(void)
+{
+    zcd_time_t zcd_calibration = zcd_calibrate();
+    zcd_adjust_setpoint(ZCD_PROC_VAL_MAX / 3);   // Example!
+    zcd_run(zcd_calibration);
 }
 
 

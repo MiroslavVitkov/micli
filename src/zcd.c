@@ -58,15 +58,21 @@ ISR(TIMER1_COMPA_vect)
 
 void start_timer1_capture_rising(void)
 {
-    TCCR1B = (1<<ICNC1) | (1<<ICES1) | (1<<CS10);  // Enable noise canceler, interrupt on rising edge, clock prescaler == 1.
-    TIMSK1 = (1<<ICIE1);                           // Call TIMER1_CAPT_vect() on rising edge.
+    ATOMIC
+    {
+        TCCR1B = (1<<ICNC1) | (1<<ICES1) | (1<<CS10);  // Enable noise canceler, interrupt on rising edge, clock prescaler == 1.
+        TIMSK1 = (1<<ICIE1);                           // Call TIMER1_CAPT_vect() on rising edge.
+    }
 }
 
 
 void start_timer1_capture_falling(void)
 {
-    TCCR1B = (1<<ICNC1) | (1<<CS10);             // Enable noise canceler, interrupt on falling edge, clock prescaler == 1.
-    TIMSK1 = (1<<ICIE1);                         // Call TIMER1_CAPT_vect() on falling edge.
+    ATOMIC
+    {
+        TCCR1B = (1<<ICNC1) | (1<<CS10);         // Enable noise canceler, interrupt on falling edge, clock prescaler == 1.
+        TIMSK1 = (1<<ICIE1);                     // Call TIMER1_CAPT_vect() on falling edge.
+    }
 }
 
 

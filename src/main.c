@@ -9,10 +9,6 @@ void main(void)
     usart_init();
     printf("Program start." NEWLINE);
 
-    zcd_time_t zcd_calibration = zcd_calibrate();
-    zcd_adjust_setpoint(ZCD_PROC_VAL_MAX / 3);
-    zcd_run(zcd_calibration);
-
     char cmd_buff[MAX_CMD_LEN];
     while(1)
     {
