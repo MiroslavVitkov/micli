@@ -94,7 +94,7 @@ void listen_for_command(char cmd_buff[])
     for(int i = 0;; ++i)
     {
         char c = getchar();
-        if(c == '\r' || c == '\n')               // If on Windows, we got an '\r' before that.
+        if(c == '\r' || c == '\n')
         {
             return;
         }
@@ -114,7 +114,7 @@ int execute_command(char cmd_buff[])
     // Try to match each known command against the buffer.
     // Stop on first match.
     // Call command handler and return.
-    // TODO: use https://en.wikipedia.org/wiki/Radix_tree
+    // A more efficient algorithms would be: https://en.wikipedia.org/wiki/Radix_tree
     for(int i = 0; i < sizeof(Commands) / sizeof(command_t); ++i)
     {
         for(int j = 0; j < Commands[i].len; ++j)
