@@ -73,6 +73,8 @@ void cmd_zcd_run(char *cmdline, int bytes)
     zcd_time_t zcd_calibration = zcd_calibrate();
     zcd_adjust_setpoint(ZCD_PROC_VAL_MAX / 3);   // Example!
     zcd_run(zcd_calibration);
+    printf("Running triac with calibration of %li us.", zcd_calibration / (F_CPU / 1000000));
+    printf(NEWLINE NEWLINE);
 }
 
 
