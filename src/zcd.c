@@ -83,7 +83,7 @@ void start_timer1_ctc(time_t max)
         TCNT1 = 0;
         OCR1A = max;
     }
-    TCCR1B = (1<<WGM11) | (1<<CS10);             // CTC mode, clock prescaler == 1.
+    TCCR1B = (1<<WGM12) | (1<<CS10);             // CTC mode, clock prescaler == 1.
     TIMSK1 = (1<<OCIE1A);                        // Call TIM1_COMPA_vect() when time is up.
 }
 
