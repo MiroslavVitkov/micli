@@ -120,6 +120,9 @@ bool should_turn_on()
 // Therefore, we measure its width and divide it by two to get the offset from the rising edge to the true ZC.
 time_t zcd_calibrate(void)
 {
+    char sreg = SREG;
+    sei();
+
     // Wait for rising edge of the zcd pulse.
     g_calibration_mode = true;
     start_timer1_capture_rising();
@@ -134,15 +137,20 @@ time_t zcd_calibrate(void)
     ATOMIC{ count = ICR1; } // Width of the zcd pulse, in CPU cycles.
     stop_timer1();
 
-    // Return our findings.
+    // Estimate offset from measured to real zc.
     time_t rising_to_zc = count / 2;             // In CPU cycles.
+
+    SREG = sreg;
     return rising_to_zc;
 }
 
 
 void zcd_adjust_setpoint(proc_val_t setpoint)
 {
-    ATOMIC{ g_setpoint = setpoint; }
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+        g_setpoint = setpoint;
+    }
 }
 
 
@@ -152,6 +160,8 @@ void zcd_adjust_setpoint(proc_val_t setpoint)
 // Repeat indeffinetely.
 void zcd_run(time_t calibration)
 {
+    sei();
+
     g_calibration_mode = false;
     ATOMIC{ g_calibration = calibration; }
     start_timer1_capture_rising();
