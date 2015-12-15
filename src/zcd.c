@@ -61,7 +61,7 @@ void start_timer1_capture_rising(void)
     ATOMIC
     {
         TCCR1B = (1<<ICNC1) | (1<<ICES1) | (1<<CS10);  // Enable noise canceler, interrupt on rising edge, clock prescaler == 1.
-        TIMSK1 = (1<<ICIE1);                           // Call TIMER1_CAPT_vect() on rising edge.
+        TIMSK1 |= (1<<ICIE1);                           // Call TIMER1_CAPT_vect() on rising edge.
     }
 }
 
@@ -71,7 +71,7 @@ void start_timer1_capture_falling(void)
     ATOMIC
     {
         TCCR1B = (1<<ICNC1) | (1<<CS10);         // Enable noise canceler, interrupt on falling edge, clock prescaler == 1.
-        TIMSK1 = (1<<ICIE1);                     // Call TIMER1_CAPT_vect() on falling edge.
+        TIMSK1 |= (1<<ICIE1);                     // Call TIMER1_CAPT_vect() on falling edge.
     }
 }
 
@@ -84,7 +84,7 @@ void start_timer1_ctc(time_t max)
         OCR1A = max;
     }
     TCCR1B = (1<<WGM12) | (1<<CS10);             // CTC mode, clock prescaler == 1.
-    TIMSK1 = (1<<OCIE1A);                        // Call TIM1_COMPA_vect() when time is up.
+    TIMSK1 |= (1<<OCIE1A);                        // Call TIM1_COMPA_vect() when time is up.
 }
 
 
