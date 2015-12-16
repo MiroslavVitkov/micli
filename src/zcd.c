@@ -27,7 +27,7 @@ void start_timer1_ctc(time_t max);
 void start_timer1_capture_rising(void);
 
 
-// We use the falling edge interrupt both in calibration and in live run.
+// We use the rising edge interrupt both in calibration and in live run.
 ISR(TIMER1_CAPT_vect)
 {
     if(g_calibration_mode)
@@ -56,35 +56,23 @@ ISR(TIMER1_COMPA_vect)
 }
 
 
-void start_timer1_capture_rising(void)
+inline void start_timer1_capture_rising(void)
 {
-    ATOMIC
-    {
-        TCCR1B = (1<<ICNC1) | (1<<ICES1) | (1<<CS10);  // Enable noise canceler, interrupt on rising edge, clock prescaler == 1.
-        TIMSK1 |= (1<<ICIE1);                           // Call TIMER1_CAPT_vect() on rising edge.
-    }
+    TCCR1B = (1<<ICNC1) | (1<<ICES1) | (1<<CS10);  // Enable noise canceler, interrupt on rising edge, clock prescaler == 1.
 }
 
 
-void start_timer1_capture_falling(void)
+inline void start_timer1_capture_falling(void)
 {
-    ATOMIC
-    {
-        TCCR1B = (1<<ICNC1) | (1<<CS10);         // Enable noise canceler, interrupt on falling edge, clock prescaler == 1.
-        TIMSK1 |= (1<<ICIE1);                     // Call TIMER1_CAPT_vect() on falling edge.
-    }
+    TCCR1B = (1<<ICNC1) | (1<<CS10);             // Enable noise canceler, interrupt on falling edge, clock prescaler == 1.
 }
 
 
 void start_timer1_ctc(time_t max)
 {
-    ATOMIC
-    {
-        TCNT1 = 0;
-        OCR1A = max;
-    }
+    TCNT1 = 0;
+    OCR1A = max;
     TCCR1B = (1<<WGM12) | (1<<CS10);             // CTC mode, clock prescaler == 1.
-    TIMSK1 |= (1<<OCIE1A);                        // Call TIM1_COMPA_vect() when time is up.
 }
 
 
@@ -120,8 +108,11 @@ bool should_turn_on()
 // Therefore, we measure its width and divide it by two to get the offset from the rising edge to the true ZC.
 time_t zcd_calibrate(void)
 {
+    // Restore interrupt status after exit.
+    // Enable all interrupts here, because there were glitches when altering TIMSK1 form an ISR.
     char sreg = SREG;
     sei();
+    TIMSK1 = (1<<ICIE1);                         // Enable edge interrupts.
 
     // Wait for rising edge of the zcd pulse.
     g_calibration_mode = true;
@@ -131,7 +122,7 @@ time_t zcd_calibrate(void)
     ATOMIC{ TCNT1 = 0; }   // Clear timer1.
 
     // Measure pulse width.
-    start_timer1_capture_falling();
+    ATOMIC{ start_timer1_capture_falling(); }
     while(!g_event_captured);
     volatile time_t count;
     ATOMIC{ count = ICR1; } // Width of the zcd pulse, in CPU cycles.
@@ -161,6 +152,7 @@ void zcd_adjust_setpoint(proc_val_t setpoint)
 void zcd_run(time_t calibration)
 {
     sei();
+    TIMSK1 = (1<<ICIE1) | (1<<OCIE1A);           // Enable level and CTC interruprs.
 
     g_calibration_mode = false;
     ATOMIC{ g_calibration = calibration; }
