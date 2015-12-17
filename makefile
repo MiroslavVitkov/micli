@@ -8,7 +8,7 @@ CONTROLDIR      =../libcontrol/build/
 CONTROLLIB      =control
 
 LDFLAGS         = -lm -lc -Wall -mmcu=$(UC) -L$(CONTROLDIR) -l$(CONTROLLIB)
-CFLAGS          = -fpack-struct -Os -mcall-prologues -mmcu=$(UC) -I$(CONTROILINC)
+CFLAGS          = -fpack-struct -Os -mcall-prologues -mmcu=$(UC) -I$(CONTROLINC)
 CFLAGS         += -finline-functions --std=c11
 CFLAGS         += -Wall -Winline -Wstrict-prototypes -Wno-main -Wfatal-errors -Wpedantic
 CFLAGS         += -DBOOTLOAD=$(BOOTLOAD)
@@ -17,11 +17,12 @@ all:
 	# Compile.
 	avr-gcc $(CFLAGS) src/main.c -c -o  build/main.o
 	avr-gcc $(CFLAGS) src/commands.c -c -o build/commands.o
+	avr-gcc $(CFLAGS) src/pid_tune.c -c -o build/pid_tune.o
 	avr-gcc $(CFLAGS) src/usart.c -c -o build/usart.o
 	avr-gcc $(CFLAGS) src/zcd.c -c -o build/zcd.o
 
 	# Link.
-	avr-gcc $(LDFLAGS) $(LDFLAGS) build/main.o build/commands.o build/usart.o build/zcd.o -o build/$(PROJNAME).elf
+	avr-gcc $(LDFLAGS) $(LDFLAGS) build/main.o build/commands.o build/pid_tune.o build/usart.o build/zcd.o -o build/$(PROJNAME).elf
 	avr-objcopy -j .text -j .data -O $(HEXFORMAT) build/$(PROJNAME).elf build/$(PROJNAME).bin
 
 	# Report.
