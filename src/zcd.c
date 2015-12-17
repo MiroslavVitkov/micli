@@ -21,6 +21,13 @@ static volatile bool g_calibration_mode = false;
 static time_t g_calibration;
 static proc_val_t g_setpoint;
 
+// This is a horrible hack.
+// For some reason, when reprogramming TIMSK1 inside an interrupt,
+// even if the timer is stopped, triggers an immediate CTC interrupt.
+// So we enable the interrupts in public api, and then use this variable
+// to select the correct CTC interrupt.
+static volatile bool g_rising_detected = false;
+
 
 bool should_turn_on(void);
 void start_timer1_ctc(time_t max);
@@ -40,6 +47,7 @@ ISR(TIMER1_CAPT_vect)
         // to avoid accidentally enabling it for the next half-wave.
         // Detect the true zero crossing and make a decision for the next half-wave.
         HEATER_PORT &= ~(1<<HEATER_PIN);
+        g_rising_detected = true;
         start_timer1_ctc(g_calibration);         // Will call TIMER1_COMPA_vect() at next true ZC.
     }
 }
@@ -48,6 +56,11 @@ ISR(TIMER1_CAPT_vect)
 // We use the CTC interrupt only in live run mode.
 ISR(TIMER1_COMPA_vect)
 {
+    if(!g_rising_detected)
+    {
+        return;
+    }
+    g_rising_detected = false;
     if(should_turn_on())
     {
         HEATER_PORT |= (1<<HEATER_PIN);
