@@ -3,8 +3,12 @@ UC              = atmega168
 HEXFORMAT       = binary
 BOOTLOAD        = 0x3E00 # byte address, start of bootlaoder
 
-LDFLAGS         = -lm -lc -Wall -mmcu=$(UC)
-CFLAGS          = -fpack-struct -Os -mcall-prologues -mmcu=$(UC)
+CONTROLINC      =../libcontrol/include/
+CONTROLDIR      =../libcontrol/build/
+CONTROLLIB      =control
+
+LDFLAGS         = -lm -lc -Wall -mmcu=$(UC) -L$(CONTROLDIR) -l$(CONTROLLIB)
+CFLAGS          = -fpack-struct -Os -mcall-prologues -mmcu=$(UC) -I$(CONTROILINC)
 CFLAGS         += -finline-functions --std=c11
 CFLAGS         += -Wall -Winline -Wstrict-prototypes -Wno-main -Wfatal-errors -Wpedantic
 CFLAGS         += -DBOOTLOAD=$(BOOTLOAD)
