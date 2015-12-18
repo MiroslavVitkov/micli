@@ -1,6 +1,7 @@
-#include "config.h"
-#include "usart.h"
 #include "commands.h"
+#include "config.h"
+#include "pid_tune.h"
+#include "usart.h"
 #include "zcd.h"
 
 #include <assert.h>
@@ -16,6 +17,7 @@
 
 // Function declarations.
 void cmd_help(char*, int);
+void cmd_pid_run(char*, int);
 void cmd_reprogram(char*, int);
 void cmd_zcd_run(char*, int);
 void cmd_zcd_set(char*, int);
@@ -33,6 +35,7 @@ typedef struct command
 const command_t Commands[] =
 {
     DECLARE_COMMAND(help)
+    DECLARE_COMMAND(pid_run)
     DECLARE_COMMAND(reprogram)
     DECLARE_COMMAND(zcd_run)
     DECLARE_COMMAND(zcd_set)
@@ -53,6 +56,13 @@ void cmd_help(char *cmdline, int bytes)
         printf("%s, ", it->msg);
     }
     printf(NEWLINE NEWLINE);                     // One blank line after output.
+}
+
+
+void cmd_pid_run(char *cmdline, int bytes)
+{
+    pid_run();
+    printf(NEWLINE NEWLINE);
 }
 
 

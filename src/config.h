@@ -33,4 +33,9 @@ typedef int8_t error_t;
 #define HEATER_PIN  PD6
 #define HEATER_PORT PORTD
 
+#define DS18X20_EEPROMSUPPORT     0
+#define DS18X20_DECICELSIUS       1
+#define DS18X20_MAX_RESOLUTION    0
+#define DS18X20_VERBOSE           0
+
 #endif	//#ifndef _CONFIG_H_
