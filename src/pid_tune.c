@@ -49,7 +49,7 @@ void handle_error(error_t e)
 {
 }
 
-void pid_run(void)
+PID_o* pid_create(void)
 {
     // Initialize the temperature sensor.
     uint8_t id;
@@ -76,34 +76,28 @@ void pid_run(void)
                        .T = 1000000,  // 1s
                        };
     PIDcreate(&pid, &conf);
-    PIDrun(pid);
+    return pid;
 }
 
-void foo(PID_o *pid){
-//scheduler
-while(FOREVER)
+void pid_run(PID_o *pid){
+    processValue_t temperature;
+
+    //start temperature measurement
+    error_t err = DS18X20_start_meas(DS18X20_POWER_EXTERN, NULL);
+    if(err != DS18X20_OK)
     {
-        //Shared memory
-        processValue_t temperature;
-
-        //Task 1: Measure inputs
-        //start temperature measurement
-        error_t err = DS18X20_start_meas(DS18X20_POWER_EXTERN, NULL);
-        if(err != DS18X20_OK)
-        {
-                handle_error(ERROR_START_MEASUREMENT);
-        }
-        _delay_ms( DS18B20_TCONV_12BIT );
-        //read temperature measurement
-        err = DS18X20_read_decicelsius_single(DS18S20_FAMILY_CODE, &temperature);
-        if(err != DS18X20_OK)
-        {
-                handle_error(ERROR_READ_TEMPERATURE);
-        }
-        ATOMIC_BLOCK(ATOMIC_RESTORESTATE) { g_temperature = temperature; }
-
-        //Task 2: Calculate control outputs
-        PIDrun(pid);
+        handle_error(ERROR_START_MEASUREMENT);
     }
+    _delay_ms( DS18B20_TCONV_12BIT );
+    //read temperature measurement
+    err = DS18X20_read_decicelsius_single(DS18S20_FAMILY_CODE, &temperature);
+    if(err != DS18X20_OK)
+    {
+        handle_error(ERROR_READ_TEMPERATURE);
+    }
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) { g_temperature = temperature; }
+
+    // Calculate control outputs.
+    PIDrun(pid);
 }
 

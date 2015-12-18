@@ -14,7 +14,8 @@ enum{
 
 
 PIDgains_s pid_tune_Zeigler_Nichols(void);
-void pid_run(void);
+PID_o* pid_create(void);
+void pid_run(PID_o*);
 
 
 #endif  // defined(_PID_TUNE_H_)
