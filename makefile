@@ -21,8 +21,12 @@ all:
 	avr-gcc $(CFLAGS) src/usart.c -c -o build/usart.o
 	avr-gcc $(CFLAGS) src/zcd.c -c -o build/zcd.o
 
+	avr-gcc $(CFLAGS) libs/crc/crc8.c -c -o build/crc8.o
+	avr-gcc $(CFLAGS) libs/ds18x20/ds18x20.c -c -o build/ds18x20.o
+	avr-gcc $(CFLAGS) libs/onewire/onewire.c -c -o build/onewire.o
+
 	# Link.
-	avr-gcc $(LDFLAGS) $(LDFLAGS) build/main.o build/commands.o build/pid_tune.o build/usart.o build/zcd.o -o build/$(PROJNAME).elf
+	avr-gcc $(LDFLAGS) build/main.o build/commands.o build/pid_tune.o build/usart.o build/zcd.o build/crc8.o build/ds18x20.o build/onewire.o -l$(CONTROLLIB) -o build/$(PROJNAME).elf
 	avr-objcopy -j .text -j .data -O $(HEXFORMAT) build/$(PROJNAME).elf build/$(PROJNAME).bin
 
 	# Report.
