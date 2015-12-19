@@ -8,6 +8,7 @@ CONTROLDIR      =../libcontrol/build/
 CONTROLLIB      =control
 
 LDFLAGS         = -lm -lc -Wall -mmcu=$(UC) -L$(CONTROLDIR) -l$(CONTROLLIB)
+LDFLAGS        += -Wl,-Map,build/$(PROJNAME).map
 CFLAGS          = -fpack-struct -Os -mcall-prologues -mmcu=$(UC) -I$(CONTROLINC)
 CFLAGS         += -finline-functions --std=c11
 CFLAGS         += -Wall -Winline -Wstrict-prototypes -Wno-main -Wfatal-errors -Wpedantic
