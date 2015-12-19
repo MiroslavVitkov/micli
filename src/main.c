@@ -27,12 +27,14 @@ void task_calc_pid(void);
 void main(void)
 {
     usart_init();
-//    clock_init();
+    clock_init();
 
     printf("Program start." NEWLINE);
 
     while(1)
     {
         task_parse_cmd();
+        printf("1s" NEWLINE);
+        clock_sleep_until_next_second();
     }
 }

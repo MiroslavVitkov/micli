@@ -111,11 +111,11 @@ bool listen_for_command(char cmd_buff[], int *bytes)
     // Wait for a string of the type "!.........\n" and record it in a buffer.
     do
     {
-        c = getchar();
-        if(c == EOF)
+        if( !(UCSR0A & (1<<RXC0)) )
         {
-            return false;                        // End of buffer.
+            return false;                            // End of input buffer.
         }
+        c = getchar();
     } while(c != '!');
 
     for(int i = 0;; ++i)

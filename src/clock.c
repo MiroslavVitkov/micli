@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
+#include <avr/wdt.h>
 #include <util/atomic.h>
 
 
@@ -15,36 +16,35 @@ time_t g_time_sec;
 
 ISR(WDT_vect)
 {
+    clock_init();
     ++g_time_sec;
 }
 
 
-// It appears that <avr/wdt.h> lack support for interrupt-move wdt.
-void enable_wdt(void)
-{
-    WDTCSR = (1<<WDCE);                          // Write enable for 4 cycles.
-    WDTCSR = (1<<WDIE) | (1<<WDP2) | (WDP1);     // Interrupt mode, 1 second cycle.
-}
-
-
-// Enter Idle sleep mode.
 void go_to_sleep(void)
 {
+    set_sleep_mode(SLEEP_MODE_IDLE);
     cli();
     sleep_enable();
+    sei();
     sleep_cpu();
-    sei();                                       // Guaranteed to be executed before going to sleep.
     sleep_disable();
 }
 
 
 void clock_init(void)
 {
-    ATOMIC{ enable_wdt(); }
+    wdt_reset();
+    ATOMIC
+    {
+        wdt_enable(WDTO_1S);
+        WDTCSR |= (1<<WDCE);
+        WDTCSR = (1<<WDIE) | (1<<WDP2) | (1<<WDP1);  // Interrupt mode, 1 second cycle.
+    }
 }
 
 
-// Go sleep. When woken up, detect that the cause is the 1s wdt.
+// Sleep until a watchdog interrupt is executed.
 void clock_sleep_until_next_second(void)
 {
     time_t now;
@@ -53,6 +53,6 @@ void clock_sleep_until_next_second(void)
     do
     {
         go_to_sleep();
-        ATOMIC{ elapsed = (now == g_time_sec); }
+        ATOMIC{ elapsed = (now < g_time_sec); }
     } while(!elapsed);
 }
