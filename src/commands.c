@@ -103,20 +103,28 @@ void cmd_zcd_set(char *cmdline, int bytes)
 // Commands have the format:
 // !command parameters ENTER
 // buff[] must be of size MAX_CMD_LEN
-void listen_for_command(char cmd_buff[], int *bytes)
+bool listen_for_command(char cmd_buff[], int *bytes)
 {
     memset(cmd_buff, 0, MAX_CMD_LEN);
+    char c;
 
     // Wait for a string of the type "!.........\n" and record it in a buffer.
-    while (getchar() != '!');
+    do
+    {
+        c = getchar();
+        if(c == EOF)
+        {
+            return false;                        // End of buffer.
+        }
+    } while(c != '!');
 
     for(int i = 0;; ++i)
     {
-        char c = getchar();
+        c = getchar();
         if(c == '\r' || c == '\n')
         {
             *bytes = i + 1;                      // Without leading '!'.
-            return;
+            return true;
         }
         else
         {
