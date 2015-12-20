@@ -45,14 +45,14 @@ void clock_init(void)
 
 
 // Sleep until a watchdog interrupt is executed.
+// If any other interrupt weakes us up, we know it by g_time_sec.
 void clock_sleep_until_next_second(void)
 {
-    time_t now;
-    ATOMIC{ now = g_time_sec; }
-    bool elapsed = false;
+    time_t before, now;
+    ATOMIC{ before = g_time_sec; }
     do
     {
         go_to_sleep();
-        ATOMIC{ elapsed = (now < g_time_sec); }
-    } while(!elapsed);
+        ATOMIC{ now = g_time_sec; }
+    } while( before == now );
 }
