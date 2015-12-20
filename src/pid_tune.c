@@ -56,14 +56,6 @@ void handle_error(error_t e)
 
 PID_o* pid_create(void)
 {
-    // Initialize the temperature sensor.
-    uint8_t id;
-    error_t err = ow_rom_search(OW_SEARCH_FIRST, &id);
-    if(err == OW_PRESENCE_ERR || err == OW_DATA_ERR)
-    {
-        handle_error(ERROR_NO_DEVICE_FOUND);
-    }
-
     // Initialize the triac control.
     zcd_time_t zcd_calibration = zcd_calibrate();
     zcd_adjust_setpoint(0);
@@ -85,24 +77,7 @@ PID_o* pid_create(void)
 }
 
 void pid_run(PID_o *pid){
-    processValue_t temperature;
-
-    //start temperature measurement
-    error_t err = DS18X20_start_meas(DS18X20_POWER_EXTERN, NULL);
-    if(err != DS18X20_OK)
-    {
-        handle_error(ERROR_START_MEASUREMENT);
-    }
-    _delay_ms( DS18B20_TCONV_12BIT );
-    //read temperature measurement
-    err = DS18X20_read_decicelsius_single(DS18S20_FAMILY_CODE, &temperature);
-    if(err != DS18X20_OK)
-    {
-        handle_error(ERROR_READ_TEMPERATURE);
-    }
-    ATOMIC{ g_temperature = temperature; }
-/*
     // Calculate control outputs.
-    PIDrun(pid);*/
+//    PIDrun(pid);
 }
 

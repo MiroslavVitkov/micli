@@ -6,12 +6,6 @@
 
 
 typedef processValue_t decicelsius_t;
-enum{
-        //SUCCESS = 0,
-        ERROR_NO_DEVICE_FOUND = 1,
-        ERROR_START_MEASUREMENT,
-        ERROR_READ_TEMPERATURE,
-};
 
 
 PID_o* pid_create(void);

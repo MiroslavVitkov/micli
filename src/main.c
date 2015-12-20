@@ -2,6 +2,7 @@
 #include "clock.h"
 #include "commands.h"
 #include "pid_tune.h"
+#include "tempr.h"
 #include "usart.h"
 #include "zcd.h"
 
@@ -40,8 +41,14 @@ void task_pid_run(void)
 void task_report(void)
 {
     clock_seconds_t time = clock_get();
-    decicelsius_t temperature = pid_get_tempr();
+    decicelsius_t temperature = tempr_get();
     printf("%lu %i" NEWLINE, time, temperature);
+}
+
+
+void task_tempr(void)
+{
+    tempr_measure();
 }
 
 
@@ -49,12 +56,14 @@ void main(void)
 {
     usart_init();
     clock_init();
+    tempr_init();
 
     printf("Program start." NEWLINE);
 
     for( ; ; clock_sleep_until_next_second() )
     {
         task_parse_cmd();
+        task_tempr();
         task_pid_run();
         task_report();
     }
