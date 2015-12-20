@@ -33,7 +33,7 @@ void task_pid_run(void)
     static PID_o *pid = NULL;
     if(pid == NULL)  pid = pid_create();
     assert(pid != NULL);
-//    pid_run(pid);
+    pid_run(pid);
 }
 
 

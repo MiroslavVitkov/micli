@@ -96,8 +96,8 @@ void pid_run(PID_o *pid){
         handle_error(ERROR_READ_TEMPERATURE);
     }
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE) { g_temperature = temperature; }
-
+/*
     // Calculate control outputs.
-    PIDrun(pid);
+    PIDrun(pid);*/
 }
 
