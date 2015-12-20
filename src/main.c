@@ -1,8 +1,15 @@
 #include "config.h"
 #include "clock.h"
 #include "commands.h"
+#include "pid_tune.h"
 #include "usart.h"
 #include "zcd.h"
+
+#include <assert.h>
+
+
+// Quieck hack for assert() to work.
+#define abort() printf("CRITICAL ERROR")
 
 
 void task_parse_cmd(void)
@@ -21,7 +28,13 @@ void task_parse_cmd(void)
 }
 
 
-void task_calc_pid(void);
+void task_pid_run(void)
+{
+    static PID_o *pid = NULL;
+    if(pid == NULL)  pid = pid_create();
+    assert(pid != NULL);
+//    pid_run(pid);
+}
 
 
 void main(void)
@@ -34,7 +47,8 @@ void main(void)
     while(1)
     {
         task_parse_cmd();
-        printf("1s" NEWLINE);
+        task_pid_run();
+printf("pid done" NEWLINE);
         clock_sleep_until_next_second();
     }
 }
