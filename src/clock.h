@@ -13,6 +13,7 @@
 typedef uint32_t clock_seconds_t;
 void clock_init(void);
 void clock_sleep_until_next_second(void);
+clock_seconds_t clock_get(void);
 
 
 #endif  // #ifdef CLOCK_H_

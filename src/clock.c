@@ -56,3 +56,11 @@ void clock_sleep_until_next_second(void)
         ATOMIC{ now = g_time_sec; }
     } while( before == now );
 }
+
+
+clock_seconds_t clock_get()
+{
+    time_t now;
+    ATOMIC{ now = g_time_sec;  }
+    return now;
+}

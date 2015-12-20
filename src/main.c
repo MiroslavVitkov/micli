@@ -37,6 +37,14 @@ void task_pid_run(void)
 }
 
 
+void task_report(void)
+{
+    clock_seconds_t time = clock_get();
+    decicelsius_t temperature = pid_get_tempr();
+    printf("%lu %i" NEWLINE, time, temperature);
+}
+
+
 void main(void)
 {
     usart_init();
@@ -44,11 +52,10 @@ void main(void)
 
     printf("Program start." NEWLINE);
 
-    while(1)
+    for( ; ; clock_sleep_until_next_second() )
     {
         task_parse_cmd();
         task_pid_run();
-printf("pid done" NEWLINE);
-        clock_sleep_until_next_second();
+        task_report();
     }
 }

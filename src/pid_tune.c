@@ -10,6 +10,9 @@
 #include <util/delay.h>
 
 
+#define ATOMIC ATOMIC_BLOCK(ATOMIC_FORCEON)
+
+
 // Because the output waveform is computed synchronously with the mains zero-crossing,
 // but temperature measurement and pid calculation happen synchronously with the cpu,
 // there is a need to synchronise between those processes.
@@ -33,9 +36,11 @@ void pid_setter(processValue_t val)
     zcd_proc_val_t cast = (zcd_proc_val_t)val;
     zcd_adjust_setpoint(cast);
 }
-processValue_t pid_getter(void)
+decicelsius_t pid_get_tempr(void)
 {
-    return g_temperature;
+    processValue_t temp;
+    ATOMIC{ temp = g_temperature; }
+    return temp;
 }
 timeUs_t get_time_microsec(void)
 {
@@ -68,7 +73,7 @@ PID_o* pid_create(void)
     PID_o *pid;
     PIDconfig_s conf = {
                        .setter = pid_setter,
-                       .getter = pid_getter,
+                       .getter = pid_get_tempr,
                        .getTimeUs = get_time_microsec,
                        .setpoint = pid_setpoint,
                        .supervisor = NULL,
@@ -95,7 +100,7 @@ void pid_run(PID_o *pid){
     {
         handle_error(ERROR_READ_TEMPERATURE);
     }
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) { g_temperature = temperature; }
+    ATOMIC{ g_temperature = temperature; }
 /*
     // Calculate control outputs.
     PIDrun(pid);*/
