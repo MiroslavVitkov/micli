@@ -38,10 +38,6 @@ void pid_setter(decicelsius_t val)
     zcd_proc_val_t cast = (zcd_proc_val_t)val;
     zcd_adjust_setpoint(cast);
 }
-void handle_error(int err)
-{
-    printf("Error %i" NEWLINE, err);
-}
 
 
 void* pid_create(pid_coeff_t p, pid_coeff_t i, pid_coeff_t d)

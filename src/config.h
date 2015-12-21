@@ -20,16 +20,6 @@
 // YOU MUST SET THIS MANUALLY IN THE MAKEFILE.
 // #define BOOTLOAD <byte_address>
 
-enum
-{
-    ERROR_NONE                             =  0,
-    ERROR_PROTOCOL_FIRST_CHARACTER         = -1,
-    ERROR_PROTOCOL_PACKET_NUMBER_INVERSION = -2,
-    ERROR_PROTOCOL_PACKET_NUMBER_ORDER     = -3,
-    ERROR_PROTOCOL_CRC                     = -4,
-};
-typedef int8_t error_t;
-
 #define HEATER_PIN  PD6
 #define HEATER_PORT PORTD
 

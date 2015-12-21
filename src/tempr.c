@@ -1,12 +1,10 @@
+#include "error.h"
 #include "tempr.h"
 
 #include "../libs/onewire/onewire.h"
 #include "../libs/ds18x20/ds18x20.h"
 
 #include <util/delay.h>
-
-
-extern void handle_error(int);
 
 
 decicelsius_t g_temperature;
