@@ -1,4 +1,5 @@
 #include "pid_tune.h"
+#include "usart.h"
 #include "zcd.h"
 
 #include "../libs/onewire/onewire.h"
@@ -50,8 +51,9 @@ processValue_t pid_setpoint(void)
 {
     return PROCESS_VALUE_MAX / 2;
 }
-void handle_error(error_t e)
+void handle_error(error_t err)
 {
+    printf("Error %i" NEWLINE, err);
 }
 
 PID_o* pid_create(void)
