@@ -23,9 +23,17 @@
 #define HEATER_PIN  PD6
 #define HEATER_PORT PORTD
 
+
+// Thermometer configuration.
 #define DS18X20_EEPROMSUPPORT     0
 #define DS18X20_DECICELSIUS       1
 #define DS18X20_MAX_RESOLUTION    0
 #define DS18X20_VERBOSE           0
+
+#define PORT_OW PORTB
+#define PIN_OW  PB6
+#define DDR_OW  DDRB
+#define PINPORT_OW PINB
+
 
 #endif	//#ifndef _CONFIG_H_
