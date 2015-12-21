@@ -31,8 +31,8 @@ void task_parse_cmd(void)
 
 void task_pid_run(void)
 {
-    static PID_o *pid = NULL;
-    if(pid == NULL)  pid = pid_create();
+    static void *pid = NULL;
+    if(pid == NULL)  pid = pid_create(1, 0, 0);
     assert(pid != NULL);
     pid_run(pid);
 }

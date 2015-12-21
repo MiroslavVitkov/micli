@@ -61,8 +61,8 @@ void cmd_help(char *cmdline, int bytes)
 
 void cmd_pid_run(char *cmdline, int bytes)
 {
-    PID_o *pid = pid_create();
-    pid_run(pid);                   // Call this repetatively to acieve pid control!
+    //PID_o *pid = pid_create();
+    //pid_run(pid);                   // Call this repetatively to acieve pid control!
     printf(NEWLINE NEWLINE);
 }
 
