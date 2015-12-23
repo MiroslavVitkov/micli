@@ -7,6 +7,9 @@
 #include <util/delay.h>
 
 
+#define MAX_INIT_RETRIES (20)
+
+
 decicelsius_t g_temperature;
 
 
@@ -14,7 +17,13 @@ void tempr_init(void)
 {
     // Initialize the temperature sensor.
     uint8_t id;
-    int err = ow_rom_search(OW_SEARCH_FIRST, &id);
+    error_t err;
+    for(int i = 0, err = 0;
+        i < MAX_INIT_RETRIES && err == OW_PRESENCE_ERR;
+        ++i)
+    {
+        err = ow_rom_search(OW_SEARCH_FIRST, &id);
+    };
     if(err == OW_PRESENCE_ERR || err == OW_DATA_ERR)
     {
         handle_error(ERROR_NO_DEVICE_FOUND);

@@ -35,5 +35,11 @@
 #define DDR_OW  DDRB
 #define PINPORT_OW PINB
 
+#define OW_ONE_BUS
+#define OW_PIN PIN_OW
+#define OW_IN PINPORT_OW
+#define OW_OUT PORT_OW
+#define OW_DDR DDR_OW
+
 
 #endif	//#ifndef _CONFIG_H_
