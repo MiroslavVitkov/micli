@@ -48,7 +48,7 @@ void* pid_create(pid_coeff_t p, pid_coeff_t i, pid_coeff_t d)
     zcd_run(zcd_calibration);
 
     // Allocate memory here, because the outside world doens't know about PID_DATA.
-    struct PID_DATA pids[1];
+    static struct PID_DATA pids[1];
     struct PID_DATA *pid = &pids[0];
 
     // Initialize the pid algorithm.
