@@ -69,3 +69,9 @@ pid_inout_t pid_run(void *obj)
     return control;
 }
 
+
+
+pid_coeff_t to_pid_coeff(int8_t coeff)
+{
+    return coeff * SCALING_FACTOR;
+}

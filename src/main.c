@@ -32,7 +32,7 @@ void task_parse_cmd(void)
 void task_pid_run(void)
 {
     static void *pid = NULL;
-    if(pid == NULL)  pid = pid_create(1, 0, 0);
+    if(pid == NULL)  pid = pid_create(to_pid_coeff(1), to_pid_coeff(0), to_pid_coeff(0));
     assert(pid != NULL);
     pid_run(pid);
 }
