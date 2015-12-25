@@ -24,5 +24,7 @@ void zcd_adjust_setpoint(zcd_proc_val_t sp);
 // Interrupts are enabled upon return.
 void zcd_run(zcd_time_t calibration);
 
+// Get current setpoint in [0, 2^16] range.
+zcd_proc_val_t zcd_get(void);
 
 #endif  // ifndef _ZCD_H_

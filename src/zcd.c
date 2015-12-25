@@ -175,3 +175,11 @@ void zcd_run(time_t calibration)
     ATOMIC{ g_calibration = calibration; }
     start_timer1_capture_rising();
 }
+
+
+zcd_proc_val_t zcd_get(void)
+{
+    zcd_proc_val_t ret;
+    ATOMIC { ret = g_setpoint; }
+    return ret;
+}

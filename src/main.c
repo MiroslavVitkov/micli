@@ -46,7 +46,8 @@ void task_report(void)
 {
     clock_seconds_t time = clock_get();
     decicelsius_t temperature = tempr_get();
-    printf("%lu %i" NEWLINE, time, temperature);
+    zcd_proc_val_t triac = zcd_get();
+    printf("%lu %i %u" NEWLINE, time, temperature, triac);
 }
 
 
