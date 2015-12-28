@@ -170,6 +170,7 @@ void zcd_run(time_t calibration)
 {
     sei();
     TIMSK1 = (1<<ICIE1) | (1<<OCIE1A);           // Enable level and CTC interruprs.
+    DDR_HEATER |= (1<<PIN_HEATER);
 
     g_calibration_mode = false;
     ATOMIC{ g_calibration = calibration; }
