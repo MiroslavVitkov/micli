@@ -46,7 +46,7 @@ ISR(TIMER1_CAPT_vect)
         // Make sure the triac control is off before the zc
         // to avoid accidentally enabling it for the next half-wave.
         // Detect the true zero crossing and make a decision for the next half-wave.
-        HEATER_PORT &= ~(1<<HEATER_PIN);
+        PORT_HEATER &= ~(1<<PIN_HEATER);
         g_rising_detected = true;
         start_timer1_ctc(g_calibration);         // Will call TIMER1_COMPA_vect() at next true ZC.
     }
@@ -63,11 +63,11 @@ ISR(TIMER1_COMPA_vect)
     g_rising_detected = false;
     if(should_turn_on())
     {
-        HEATER_PORT |= (1<<HEATER_PIN);
+        PORT_HEATER |= (1<<PIN_HEATER);
     }
     else
     {
-        HEATER_PORT &= ~(1<<HEATER_PIN);
+        PORT_HEATER &= ~(1<<PIN_HEATER);
     }
     start_timer1_capture_rising();
 }

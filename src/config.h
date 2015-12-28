@@ -20,8 +20,9 @@
 // YOU MUST SET THIS MANUALLY IN THE MAKEFILE.
 // #define BOOTLOAD <byte_address>
 
-#define HEATER_PIN  PD6
-#define HEATER_PORT PORTD
+#define PIN_HEATER  PD6
+#define PORT_HEATER PORTD
+#define DDR_HEATER  DDRD
 
 
 // Thermometer configuration.
