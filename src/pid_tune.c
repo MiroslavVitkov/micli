@@ -6,7 +6,6 @@
 #include "../libs/onewire/onewire.h"
 #include "../libs/pid/pid.h"
 
-#include <assert.h>
 #include <stdbool.h>
 #include <util/atomic.h>
 #include <util/delay.h>
@@ -20,17 +19,6 @@
 // there is a need to synchronise between those processes.
 // This variable stores the latest measured value of the temperature.
 decicelsius_t g_temperature;
-
-
-void pid_tune_Zeigler_Nichols(void)
-{
-    // Set P, I and D gains to 0.
-    // Inkrease P until the output performs sustained oscilaltions.
-    // Measure the gain Ku and the period Pu.
-    // Consult the table in the literature.
-    //PIDgains_s result;
-    //return result;
-}
 
 
 void* pid_create(pid_coeff_t p, pid_coeff_t i, pid_coeff_t d)
@@ -51,10 +39,11 @@ void* pid_create(pid_coeff_t p, pid_coeff_t i, pid_coeff_t d)
     return pid;
 }
 
-pid_inout_t pid_run(void *obj)
+
+pid_inout_t pid_run(pid_inout_t setpoint, void *obj)
 {
     struct PID_DATA *pid = (struct PID_DATA*)obj;
-    int16_t setpoint = 220, proc_val;
+    int16_t proc_val;
     ATOMIC
     {
         proc_val = tempr_get();
@@ -64,8 +53,18 @@ pid_inout_t pid_run(void *obj)
 }
 
 
-
 pid_coeff_t to_pid_coeff(int8_t coeff)
 {
     return coeff * SCALING_FACTOR;
+}
+
+
+void pid_tune_Zeigler_Nichols(void)
+{
+    // Set P, I and D gains to 0.
+    // Inkrease P until the output performs sustained oscilaltions.
+    // Measure the gain Ku and the period Pu.
+    // Consult the table in the literature.
+    //PIDgains_s result;
+    //return result;
 }
