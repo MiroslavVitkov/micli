@@ -14,13 +14,6 @@
 #define ATOMIC ATOMIC_BLOCK(ATOMIC_FORCEON)
 
 
-// Because the output waveform is computed synchronously with the mains zero-crossing,
-// but temperature measurement and pid calculation happen synchronously with the cpu,
-// there is a need to synchronise between those processes.
-// This variable stores the latest measured value of the temperature.
-decicelsius_t g_temperature;
-
-
 void* pid_create(pid_coeff_t p, pid_coeff_t i, pid_coeff_t d)
 {
     // Initialize the triac control.

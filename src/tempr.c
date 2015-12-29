@@ -10,7 +10,11 @@
 #define MAX_INIT_RETRIES (20)
 
 
-decicelsius_t g_temperature;
+// Because the output waveform is computed synchronously with the mains zero-crossing,
+// but temperature measurement and pid calculation happen synchronously with the cpu,
+// there is a need to synchronise between those processes.
+// This variable stores the latest measured value of the temperature.
+static decicelsius_t g_temperature;
 
 
 void tempr_init(void)
