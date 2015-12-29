@@ -13,6 +13,10 @@
 #define abort() printf("CRITICAL ERROR")
 
 
+decicelsius_t to_deci(zcd_proc_val_t val) {return (((uint32_t)val * 640) / ZCD_PROC_VAL_MAX);}
+zcd_proc_val_t to_zcd(decicelsius_t val) {return (((uint32_t)val *ZCD_PROC_VAL_MAX) / 640);}
+
+
 void task_parse_cmd(void)
 {
     int len;
@@ -37,7 +41,7 @@ void task_pid_run(void)
     pid_inout_t ctrl =  pid_run(pid);
 
     // Cast [0, 640] decicelsius to [2^0, 2^16].
-    zcd_proc_val_t cast = (zcd_proc_val_t)(ctrl * (ZCD_PROC_VAL_MAX / 640));
+    zcd_proc_val_t cast = to_zcd(ctrl);
     zcd_adjust_setpoint(cast);
 }
 
@@ -46,7 +50,7 @@ void task_report(void)
 {
     clock_seconds_t time = clock_get();
     decicelsius_t temperature = tempr_get();
-    zcd_proc_val_t triac = zcd_get();
+    zcd_proc_val_t triac = to_deci( zcd_get() );
     printf("%lu %i %u" NEWLINE, time, temperature, triac);
 }
 
