@@ -1,3 +1,7 @@
+// Used hardware: none.
+// Used interrupts: none.
+// Used software modules: zcd, usart.
+
 #ifndef _PID_TUNE_H_
 #define _PID_TUNE_H_
 

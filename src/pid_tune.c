@@ -33,19 +33,13 @@ void pid_tune_Zeigler_Nichols(void)
 }
 
 
-void pid_setter(decicelsius_t val)
-{
-    zcd_proc_val_t cast = (zcd_proc_val_t)val;
-    zcd_adjust_setpoint(cast);
-}
-
-
 void* pid_create(pid_coeff_t p, pid_coeff_t i, pid_coeff_t d)
 {
     // Initialize the triac control.
     zcd_time_t zcd_calibration = zcd_calibrate();
     zcd_adjust_setpoint(0);
     zcd_run(zcd_calibration);
+    printf("Running triac with calibration of %li us." NEWLINE, zcd_calibration / (F_CPU / 1000000));
 
     // Allocate memory here, because the outside world doens't know about PID_DATA.
     static struct PID_DATA pids[1];
