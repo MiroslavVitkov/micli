@@ -7,6 +7,7 @@
 #include "../libs/pid/pid.h"
 
 #include <stdbool.h>
+#include <stdlib.h>
 #include <util/atomic.h>
 #include <util/delay.h>
 
@@ -23,13 +24,18 @@ void* pid_create(pid_coeff_t p, pid_coeff_t i, pid_coeff_t d)
     printf("Running triac with calibration of %li us." NEWLINE, zcd_calibration / (F_CPU / 1000000));
 
     // Allocate memory here, because the outside world doens't know about PID_DATA.
-    static struct PID_DATA pids[1];
-    struct PID_DATA *pid = &pids[0];
+    struct PID_DATA *pid = malloc(sizeof(struct PID_DATA));
 
     // Initialize the pid algorithm.
     pid_Init(p, i, d, pid);
 
     return pid;
+}
+
+
+void pid_destroy(void *pid)
+{
+    free(pid);
 }
 
 
@@ -52,12 +58,14 @@ pid_coeff_t to_pid_coeff(int8_t coeff)
 }
 
 
-void pid_tune_Zeigler_Nichols(void)
+pid_coeffs_t pid_tune_Zeigler_Nichols(void)
 {
     // Set P, I and D gains to 0.
-    // Inkrease P until the output performs sustained oscilaltions.
+    // Increase P until the output performs sustained oscilaltions.
+    void *pid = pid_create(0, 0, 0);
+    pid_destroy(pid);
     // Measure the gain Ku and the period Pu.
     // Consult the table in the literature.
-    //PIDgains_s result;
-    //return result;
+    pid_coeffs_t result;
+    return result;
 }
