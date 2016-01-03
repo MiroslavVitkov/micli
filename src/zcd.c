@@ -1,4 +1,5 @@
 #include "config.h"
+#include "usart.h"
 #include "zcd.h"
 
 #include <stdbool.h>
@@ -16,7 +17,7 @@ typedef zcd_time_t time_t;
 typedef zcd_proc_val_t proc_val_t;
 
 
-static volatile bool g_event_captured = false;
+static volatile bool g_event_captured = false;    // TODO: maybe merge with g_rising_detected
 static volatile bool g_calibration_mode = false;
 static time_t g_calibration;
 static proc_val_t g_setpoint;
@@ -29,6 +30,11 @@ static proc_val_t g_setpoint;
 static volatile bool g_rising_detected = false;
 
 
+zcd_time_t zcd_calibrate(void);
+void zcd_run(zcd_time_t calibration);
+
+// Get current setpoint in [0, 2^16] range.
+zcd_proc_val_t zcd_get(void);
 bool should_turn_on(void);
 void start_timer1_ctc(time_t max);
 void start_timer1_capture_rising(void);
@@ -119,6 +125,17 @@ bool should_turn_on()
 }
 
 
+// Initialize the triac control.
+void zcd_init(void)
+{
+    zcd_time_t zcd_calibration = zcd_calibrate();
+    zcd_set(0);
+    zcd_run(zcd_calibration);
+    printf("Running triac with calibration of %li us." NEWLINE, zcd_calibration / (F_CPU / 1000000));
+}
+
+
+// Measure the offset from the rising edge of the ZCD to the true zero crossing.
 // An oscilloscope trace of the ZCD pcb, used in the project can be found here:
 // http://electronics.stackexchange.com/questions/201605/automatic-calibration-of-a-zero-cross-detector-latency
 // It is evident, that the pulse is wide, but centered around the ZC.
@@ -153,7 +170,7 @@ time_t zcd_calibrate(void)
 }
 
 
-void zcd_adjust_setpoint(proc_val_t setpoint)
+void zcd_set(proc_val_t setpoint)
 {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {

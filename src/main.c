@@ -43,7 +43,7 @@ void task_pid_run(void)
 
     // Cast [0, 640] decicelsius to [2^0, 2^16].
     zcd_proc_val_t cast = to_zcd(ctrl);
-    zcd_adjust_setpoint(cast);
+    zcd_set(cast);
 }
 
 
@@ -67,6 +67,7 @@ void main(void)
     usart_init();
     clock_init();
     tempr_init();
+    zcd_init();
 
     printf("Program start." NEWLINE);
 

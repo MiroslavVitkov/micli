@@ -1,6 +1,5 @@
 #include "pid_tune.h"
 #include "usart.h"
-#include "zcd.h"
 
 #include "../libs/ds18x20/ds18x20.h"
 #include "../libs/onewire/onewire.h"
@@ -17,12 +16,6 @@
 
 void* pid_create(pid_coeff_t p, pid_coeff_t i, pid_coeff_t d)
 {
-    // Initialize the triac control.
-    zcd_time_t zcd_calibration = zcd_calibrate();
-    zcd_adjust_setpoint(0);
-    zcd_run(zcd_calibration);
-    printf("Running triac with calibration of %li us." NEWLINE, zcd_calibration / (F_CPU / 1000000));
-
     // Allocate memory here, because the outside world doens't know about PID_DATA.
     struct PID_DATA *pid = malloc(sizeof(struct PID_DATA));
 

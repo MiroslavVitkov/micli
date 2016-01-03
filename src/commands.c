@@ -17,9 +17,7 @@
 
 // Function declarations.
 void cmd_help(char*, int);
-void cmd_pid_run(char*, int);
 void cmd_reprogram(char*, int);
-void cmd_zcd_run(char*, int);
 void cmd_zcd_set(char*, int);
 
 
@@ -35,9 +33,7 @@ typedef struct command
 const command_t Commands[] =
 {
     DECLARE_COMMAND(help)
-    DECLARE_COMMAND(pid_run)
     DECLARE_COMMAND(reprogram)
-    DECLARE_COMMAND(zcd_run)
     DECLARE_COMMAND(zcd_set)
 };
 
@@ -59,14 +55,6 @@ void cmd_help(char *cmdline, int bytes)
 }
 
 
-void cmd_pid_run(char *cmdline, int bytes)
-{
-    //PID_o *pid = pid_create();
-    //pid_run(pid);                   // Call this repetatively to acieve pid control!
-    printf(NEWLINE NEWLINE);
-}
-
-
 void cmd_reprogram(char *cmdline, int bytes)
 {
     printf("Jumping to bootloader in 3 seconds." NEWLINE);
@@ -78,22 +66,11 @@ void cmd_reprogram(char *cmdline, int bytes)
 }
 
 
-// Runs the zero-cross detector and, subsequencly, the timer for the tric control.
-void cmd_zcd_run(char *cmdline, int bytes)
-{
-    zcd_time_t zcd_calibration = zcd_calibrate();
-    zcd_adjust_setpoint(ZCD_PROC_VAL_MAX / 3);   // Example!
-    zcd_run(zcd_calibration);
-    printf("Running triac with calibration of %li us.", zcd_calibration / (F_CPU / 1000000));
-    printf(NEWLINE NEWLINE);
-}
-
-
 void cmd_zcd_set(char *cmdline, int bytes)
 {
     cmdline[bytes] = '\0';
     int number = atoi(cmdline+sizeof("zcd_run"));
-    zcd_adjust_setpoint(number);
+    zcd_set(number);
     printf("Triac output configuread at %u from %u.", number, ZCD_PROC_VAL_MAX);
     printf(NEWLINE NEWLINE);
 }

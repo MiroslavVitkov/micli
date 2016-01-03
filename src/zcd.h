@@ -14,15 +14,11 @@
 typedef uint16_t zcd_time_t;
 typedef uint16_t zcd_proc_val_t;
 
-
-// Measure the offset from the rising edge of the ZCD to the true zero crossing.
-zcd_time_t zcd_calibrate(void);
-
-// Values are in range [0, 2^16].
-void zcd_adjust_setpoint(zcd_proc_val_t sp);
-
 // Interrupts are enabled upon return.
-void zcd_run(zcd_time_t calibration);
+void zcd_init(void);
+
+// Values are in range [0, 2^16] and map to [0, 100]% .
+void zcd_set(zcd_proc_val_t setpoint);
 
 // Get current setpoint in [0, 2^16] range.
 zcd_proc_val_t zcd_get(void);
