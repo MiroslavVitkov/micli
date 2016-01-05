@@ -18,6 +18,7 @@
 // Function declarations.
 void cmd_help(char*, int);
 void cmd_reprogram(char*, int);
+void cmd_pid_setpoint(char*, int);
 void cmd_zcd_set(char*, int);
 
 
@@ -34,6 +35,7 @@ const command_t Commands[] =
 {
     DECLARE_COMMAND(help)
     DECLARE_COMMAND(reprogram)
+    DECLARE_COMMAND(pid_setpoint)
     DECLARE_COMMAND(zcd_set)
 };
 
@@ -63,6 +65,16 @@ void cmd_reprogram(char *cmdline, int bytes)
     typedef void (* fn_ptr_t) (void);
     fn_ptr_t my_ptr = (fn_ptr_t)BOOTLOAD;
     my_ptr();
+}
+
+
+void cmd_pid_setpoint(char *cmdline, int bytes)
+{
+    cmdline[bytes] = '\0';
+    int number = atoi(cmdline+sizeof("pid_setpoint"));
+    pid_setpoint(number);
+    printf("PID setpoint is now %u decicelsius.", number);
+    printf(NEWLINE NEWLINE);
 }
 
 

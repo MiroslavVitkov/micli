@@ -39,7 +39,7 @@ void task_pid_run(void)
     static void *pid = NULL;
     if(pid == NULL)  pid = pid_create(to_pid_coeff(1), to_pid_coeff(0), to_pid_coeff(0));
     assert(pid != NULL);
-    pid_inout_t ctrl =  pid_run(220, pid);
+    pid_inout_t ctrl = pid_run(pid);
 
     // Cast [0, 640] decicelsius to [2^0, 2^16].
     zcd_proc_val_t cast = to_zcd(ctrl);

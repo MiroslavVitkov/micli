@@ -14,6 +14,9 @@
 #define ATOMIC ATOMIC_BLOCK(ATOMIC_FORCEON)
 
 
+pid_inout_t g_setpoint = 0;
+
+
 void* pid_create(pid_coeff_t p, pid_coeff_t i, pid_coeff_t d)
 {
     // Allocate memory here, because the outside world doens't know about PID_DATA.
@@ -32,7 +35,13 @@ void pid_destroy(void *pid)
 }
 
 
-pid_inout_t pid_run(pid_inout_t setpoint, void *obj)
+void pid_setpoint(pid_inout_t sp)
+{
+    g_setpoint = sp;
+}
+
+
+pid_inout_t pid_run(void *obj)
 {
     struct PID_DATA *pid = (struct PID_DATA*)obj;
     int16_t proc_val;
@@ -40,7 +49,7 @@ pid_inout_t pid_run(pid_inout_t setpoint, void *obj)
     {
         proc_val = tempr_get();
     }
-    pid_inout_t control = pid_Controller(setpoint, proc_val, pid);
+    pid_inout_t control = pid_Controller(g_setpoint, proc_val, pid);
     return control;
 }
 
