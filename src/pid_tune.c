@@ -62,3 +62,47 @@ pid_coeffs_t pid_tune_Zeigler_Nichols(void)
     pid_coeffs_t result;
     return result;
 }
+
+
+enum  // TODO: name the enum, prefix values, move to header
+{
+    SETTLED,
+    OSCILLATING,
+    UNSTABLE,
+};
+int pid_wait_to_settle(pid_inout_t i, pid_inout_t critical, pid_inout_t treshold, clock_seconds_t now)
+{
+    typedef struct
+    {
+        const bool is_min;
+        pid_inout_t val;
+        clock_seconds_t when;
+    } extremum_t;
+
+    static extremum_t min = {.is_min=true, .val=PID_INOUT_MAX, .when=0};   // TODO: those will need to te globals
+    static extremum_t max = {.is_min=false, .val=PID_INOUT_MIN, .when=0};  // so that another function can reset them
+    static extremum_t *prev = &min;
+
+    if(prev->is_min)
+    {
+        // Look for a maximum.
+        if(i > max.val)
+        {
+            max.val = i;
+            max.when = now;
+        }
+    }
+    else
+    {
+        if(i < min.val)
+        {
+            min.val = i;
+            min.when = now;
+        }
+    }
+
+    if(i >= critical)  return UNSTABLE;
+    else if(max.val - min.val < treshold)  return SETTLED;
+    else return OSCILLATING;
+}
+
