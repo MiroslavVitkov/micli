@@ -18,6 +18,7 @@
 // Function declarations.
 void cmd_help(char*, int);
 void cmd_reprogram(char*, int);
+void cmd_pid_coeffs(char*, int);
 void cmd_pid_setpoint(char*, int);
 void cmd_zcd_set(char*, int);
 
@@ -35,6 +36,7 @@ const command_t Commands[] =
 {
     DECLARE_COMMAND(help)
     DECLARE_COMMAND(reprogram)
+    DECLARE_COMMAND(pid_coeffs)
     DECLARE_COMMAND(pid_setpoint)
     DECLARE_COMMAND(zcd_set)
 };
@@ -65,6 +67,23 @@ void cmd_reprogram(char *cmdline, int bytes)
     typedef void (* fn_ptr_t) (void);
     fn_ptr_t my_ptr = (fn_ptr_t)BOOTLOAD;
     my_ptr();
+}
+
+
+void cmd_pid_coeffs(char *cmdline, int bytes)
+{
+    cmdline[bytes] = '\0';
+    char *it = cmdline+sizeof("pid_coeffs");
+    int num[3];
+    for(int i = 0; i < 3; ++i)
+    {
+        num[i] = atoi(it);
+        it += (num[i] / 10) + 2;                 // Skip all digits and a whitespace.
+        if(num[i] < 0)  ++it;
+    }
+    // TODO: set pid coeffs to this
+    printf("P = %i, I = %i, D = %i.", num[0], num[1], num[2]);
+    printf(NEWLINE NEWLINE);
 }
 
 

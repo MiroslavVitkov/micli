@@ -8,7 +8,7 @@
 #include <stdbool.h>
 
 
-#define MAX_CMD_LEN 16                           // In bytes, includeing whitespaces and parameters.
+#define MAX_CMD_LEN 32                           // In bytes, includeing whitespaces and parameters.
 bool listen_for_command(char cmd_buff[], int *bytes);
 int execute_command(char cmd_buff[], int bytes);
 
