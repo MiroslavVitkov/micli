@@ -15,23 +15,12 @@
 
 
 pid_inout_t g_setpoint = 0;
+struct PID_DATA g_pid;
 
 
-void* pid_create(pid_coeff_t p, pid_coeff_t i, pid_coeff_t d)
+void pid_config(pid_coeff_t p, pid_coeff_t i, pid_coeff_t d)
 {
-    // Allocate memory here, because the outside world doens't know about PID_DATA.
-    struct PID_DATA *pid = malloc(sizeof(struct PID_DATA));
-
-    // Initialize the pid algorithm.
-    pid_Init(p, i, d, pid);
-
-    return pid;
-}
-
-
-void pid_destroy(void *pid)
-{
-    free(pid);
+    pid_Init(p, i, d, &g_pid);
 }
 
 
@@ -41,15 +30,9 @@ void pid_setpoint(pid_inout_t sp)
 }
 
 
-pid_inout_t pid_run(void *obj)
+pid_inout_t pid_run(pid_inout_t proc_val)
 {
-    struct PID_DATA *pid = (struct PID_DATA*)obj;
-    int16_t proc_val;
-    ATOMIC
-    {
-        proc_val = tempr_get();
-    }
-    pid_inout_t control = pid_Controller(g_setpoint, proc_val, pid);
+    pid_inout_t control = pid_Controller(g_setpoint, proc_val, &g_pid);
     return control;
 }
 
@@ -64,8 +47,8 @@ pid_coeffs_t pid_tune_Zeigler_Nichols(void)
 {
     // Set P, I and D gains to 0.
     // Increase P until the output performs sustained oscilaltions.
-    void *pid = pid_create(0, 0, 0);
-    pid_destroy(pid);
+//    void *pid = pid_create(0, 0, 0);
+//    pid_destroy(pid);
     // Measure the gain Ku and the period Pu.
     // Consult the table in the literature.
     pid_coeffs_t result;

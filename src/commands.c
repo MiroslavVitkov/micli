@@ -72,6 +72,7 @@ void cmd_reprogram(char *cmdline, int bytes)
 
 void cmd_pid_coeffs(char *cmdline, int bytes)
 {
+    // Parse 'pid_coeffs <p> <i> <d>'.
     cmdline[bytes] = '\0';
     char *it = cmdline+sizeof("pid_coeffs");
     int num[3];
@@ -81,7 +82,9 @@ void cmd_pid_coeffs(char *cmdline, int bytes)
         it += (num[i] / 10) + 2;                 // Skip all digits and a whitespace.
         if(num[i] < 0)  ++it;
     }
-    // TODO: set pid coeffs to this
+
+    // Unsofrunately, we support only integer gains currently.
+    pid_config( to_pid_coeff(num[0]), to_pid_coeff(num[1]), to_pid_coeff(num[2]) );
     printf("P = %i, I = %i, D = %i.", num[0], num[1], num[2]);
     printf(NEWLINE NEWLINE);
 }

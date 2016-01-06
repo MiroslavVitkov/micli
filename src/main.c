@@ -36,10 +36,8 @@ void task_parse_cmd(void)
 
 void task_pid_run(void)
 {
-    static void *pid = NULL;
-    if(pid == NULL)  pid = pid_create(to_pid_coeff(1), to_pid_coeff(0), to_pid_coeff(0));
-    assert(pid != NULL);
-    pid_inout_t ctrl = pid_run(pid);
+    pid_inout_t proc_val = (pid_inout_t)tempr_get();
+    pid_inout_t ctrl = pid_run(proc_val);
 
     // Cast [0, 640] decicelsius to [2^0, 2^16].
     zcd_proc_val_t cast = to_zcd(ctrl);
@@ -66,6 +64,7 @@ void main(void)
 {
     usart_init();
     clock_init();
+    pid_config(0, 0, 0);
     tempr_init();
     zcd_init();
 

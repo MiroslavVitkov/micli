@@ -19,14 +19,15 @@
 
 typedef int16_t pid_coeff_t;                     // 9s6 format i.e. 128 == 1.0
 typedef int16_t pid_inout_t;
-typedef struct {pid_coeff_t p, i, d;} pid_coeffs_t;
 
-void* pid_create(pid_coeff_t p, pid_coeff_t i, pid_coeff_t d);
-void pid_destroy(void *pid);
+
+void pid_config(pid_coeff_t p, pid_coeff_t i, pid_coeff_t d);
 void pid_setpoint(pid_inout_t sp);
-pid_inout_t pid_run(void *obj);
+pid_inout_t pid_run(pid_inout_t proc_val);
 pid_coeff_t to_pid_coeff(int8_t coeff);
-int pid_wait_to_settle(pid_inout_t i, pid_inout_t critical, pid_inout_t treshold, clock_seconds_t now);
+int pid_wait_to_settle(pid_inout_t proc_val, pid_inout_t critical, pid_inout_t treshold, clock_seconds_t now);
+
+typedef struct {pid_coeff_t p, i, d;} pid_coeffs_t;
 pid_coeffs_t  pid_tune_Zeigler_Nichols(void);
 
 
