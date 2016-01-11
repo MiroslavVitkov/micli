@@ -45,6 +45,12 @@ pid_coeff_t to_pid_coeff(int8_t coeff)
 
 pid_coeffs_t pid_tune_Zeigler_Nichols(void)
 {
+    // Replace the pid controlelr with a relay.
+    // The relay has no hysteresis and acts as a sign function.
+    // The amplitude of the relay is selected to be 100 decicelsius.
+    // The setpoint is selected to be 300 decicelsius.
+    // Consistent and symmetrical oscillations should be observed.
+
     // Set P, I and D gains to 0.
     // Increase P until the output performs sustained oscilaltions.
 //    void *pid = pid_create(0, 0, 0);
@@ -56,13 +62,7 @@ pid_coeffs_t pid_tune_Zeigler_Nichols(void)
 }
 
 
-enum  // TODO: name the enum, prefix values, move to header
-{
-    SETTLED,
-    OSCILLATING,
-    UNSTABLE,
-};
-int pid_wait_to_settle(pid_inout_t i, pid_inout_t critical, pid_inout_t treshold, clock_seconds_t now)
+int pid_wait_to_settle(pid_inout_t proc_val, pid_inout_t critical, pid_inout_t treshold, clock_seconds_t now)
 {
     typedef struct
     {
@@ -78,23 +78,23 @@ int pid_wait_to_settle(pid_inout_t i, pid_inout_t critical, pid_inout_t treshold
     if(prev->is_min)
     {
         // Look for a maximum.
-        if(i > max.val)
+        if(proc_val > max.val)
         {
-            max.val = i;
+            max.val = proc_val;
             max.when = now;
         }
     }
     else
     {
-        if(i < min.val)
+        if(proc_val < min.val)
         {
-            min.val = i;
+            min.val = proc_val;
             min.when = now;
         }
     }
 
-    if(i >= critical)  return UNSTABLE;
-    else if(max.val - min.val < treshold)  return SETTLED;
-    else return OSCILLATING;
+    if(proc_val >= critical)  return PID_UNSTABLE;
+    else if(max.val - min.val < treshold)  return PID_SETTLED;
+    else return PID_OSCILLATING;
 }
 
