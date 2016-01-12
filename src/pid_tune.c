@@ -13,6 +13,12 @@
 
 
 #define ATOMIC ATOMIC_BLOCK(ATOMIC_FORCEON)
+typedef enum pid_state_e
+{
+    SETTLED,
+    OSCILLATING,
+    UNSTABLE,
+} pid_state_t;
 
 
 typedef struct
@@ -25,8 +31,13 @@ typedef struct
 {
     bool ready;
     extremum_t min, max;
+    extremum_t *curr, *prev;
     pid_coeff_t p, i, d;
 } pid_tune_t;
+
+
+pid_inout_t pid_onoff_controller(pid_inout_t proc_val, pid_inout_t sp, pid_inout_t ampl);
+pid_state_t pid_wait_to_settle(pid_inout_t proc_val, pid_inout_t critical, pid_inout_t treshold, clock_seconds_t now);
 
 
 pid_inout_t g_setpoint = 0;
@@ -36,6 +47,8 @@ pid_tune_t g_pid_tune =
     .ready = false,
     .min = {.is_min=true, .val=PID_INOUT_MAX, .when=0},
     .max = {.is_min=false, .val=PID_INOUT_MIN, .when=0},
+    .curr = &g_pid_tune.min,
+    .prev = &g_pid_tune.max,
     .p = 0,
     .i = 0,
     .d = 0,
@@ -81,8 +94,32 @@ void pid_get_coeffs(pid_coeff_t *p, pid_coeff_t *i, pid_coeff_t *d)
 }
 
 
+// Astrom-Hagglund
+// Second method of Ziegler-Nichols
 pid_inout_t pid_tune_Ziegler_Nichols(pid_inout_t proc_val, clock_seconds_t now)
 {
+    assert(!g_pid_tune.ready);
+
+    const pid_inout_t relay_ampl = 500;
+    pid_inout_t ctrl = pid_onoff_controller(proc_val, 300, relay_ampl);
+    pid_state_t osc = pid_wait_to_settle(proc_val, 600, 10, now);
+    assert(osc == OSCILLATING);
+
+    clock_seconds_t patience = 600;
+    if(now > patience)
+    {
+        g_pid_tune.ready = true;
+        pid_inout_t a = g_pid_tune.max.val - g_pid_tune.min.val;
+        pid_inout_t pi = 31;  // decicelsius?
+        pid_inout_t Ku = (4 * relay_ampl) / (pi * a);
+        clock_seconds_t Tu = 2 * (g_pid_tune.curr->when - g_pid_tune.prev->when);
+        g_pid_tune.p = 6 * Ku;  // decicelsius?
+        g_pid_tune.i = g_pid_tune.p / (5 * Tu);
+        g_pid_tune.d = g_pid_tune.p / (1 * Tu);
+    }
+
+    return ctrl;
+
     // Replace the pid controlelr with a relay.
     // The relay has no hysteresis and acts as a sign function.
     // The amplitude of the relay is selected to be 100 decicelsius.
@@ -95,45 +132,6 @@ pid_inout_t pid_tune_Ziegler_Nichols(pid_inout_t proc_val, clock_seconds_t now)
 //    pid_destroy(pid);
     // Measure the gain Ku and the period Pu.
     // Consult the table in the literature.
-    pid_inout_t ctrl = 0;
-    return ctrl;
-}
-
-
-pid_state_t pid_wait_to_settle(pid_inout_t proc_val, pid_inout_t critical, pid_inout_t treshold, clock_seconds_t now)
-{
-    typedef struct
-    {
-        const bool is_min;
-        pid_inout_t val;
-        clock_seconds_t when;
-    } extremum_t;
-
-    static extremum_t min = {.is_min=true, .val=PID_INOUT_MAX, .when=0};   // TODO: those will need to te globals
-    static extremum_t max = {.is_min=false, .val=PID_INOUT_MIN, .when=0};  // so that another function can reset them
-    static extremum_t *prev = &min;
-
-    if(prev->is_min)
-    {
-        // Look for a maximum.
-        if(proc_val > max.val)
-        {
-            max.val = proc_val;
-            max.when = now;
-        }
-    }
-    else
-    {
-        if(proc_val < min.val)
-        {
-            min.val = proc_val;
-            min.when = now;
-        }
-    }
-
-    if(proc_val >= critical)  return PID_UNSTABLE;
-    else if(max.val - min.val < treshold)  return PID_SETTLED;
-    else return PID_OSCILLATING;
 }
 
 
@@ -147,4 +145,39 @@ pid_inout_t pid_onoff_controller(pid_inout_t proc_val, pid_inout_t sp, pid_inout
     {
         return ampl;
     }
+}
+
+
+pid_state_t pid_wait_to_settle(pid_inout_t proc_val, pid_inout_t critical, pid_inout_t treshold, clock_seconds_t now)
+{
+    extremum_t *min = &g_pid_tune.min;
+    extremum_t *max = &g_pid_tune.max;
+    extremum_t **curr = &g_pid_tune.curr;
+    extremum_t **prev = &g_pid_tune.prev;
+
+    if(*prev == min)
+    {
+        // Look for a maximum.
+        if(proc_val > (*max).val)
+        {
+            (*max).val = proc_val;
+            (*max).when = now;
+            *curr = max;
+            *prev = min;
+        }
+    }
+    else
+    {
+        if(proc_val < (*min).val)
+        {
+            (*min).val = proc_val;
+            (*min).when = now;
+            *curr = min;
+            *prev = max;
+        }
+    }
+
+    if(proc_val >= critical)  return UNSTABLE;
+    else if((*max).val - (*min).val < treshold)  return SETTLED;
+    else return OSCILLATING;
 }

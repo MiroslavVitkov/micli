@@ -15,12 +15,7 @@
 #define PID_COEFF_MAX (INT16_MAX)
 #define PID_INOUT_MAX (INT16_MAX)
 #define PID_INOUT_MIN (INT16_MIN)
-typedef enum pid_state_e
-{
-    PID_SETTLED,
-    PID_OSCILLATING,
-    PID_UNSTABLE,
-} pid_state_t;
+
 
 typedef int16_t pid_coeff_t;                     // 9s6 format i.e. 128 == 1.0
 typedef int16_t pid_inout_t;
