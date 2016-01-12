@@ -36,8 +36,35 @@ void task_parse_cmd(void)
 
 void task_pid_run(void)
 {
+    static enum state_e
+    {
+        TUNING,
+        CREATING,
+        RUNNING,
+    } state = TUNING;
+
     pid_inout_t proc_val = (pid_inout_t)tempr_get();
-    pid_inout_t ctrl = pid_run(proc_val);
+    pid_inout_t ctrl = 0;
+
+    switch(state)
+    {
+        case TUNING:
+            ctrl = pid_tune_Ziegler_Nichols( proc_val, clock_get() );
+            if( pid_tune_finished() )  state = CREATING;
+            break;
+
+        case CREATING:
+            ctrl = 0;
+            pid_coeff_t p, i, d;
+            pid_get_coeffs(&p, &i, &d);
+            pid_config(p, i, d);
+            state = RUNNING;
+            break;
+
+        case RUNNING:
+            ctrl = pid_run(proc_val);
+            break;
+    }
 
     // Cast [0, 640] decicelsius to [2^0, 2^16].
     zcd_proc_val_t cast = to_zcd(ctrl);
@@ -85,7 +112,6 @@ void main(void)
 {
     usart_init();
     clock_init();
-    pid_config(0, 0, 0);
     tempr_init();
     zcd_init();
 

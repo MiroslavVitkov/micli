@@ -5,6 +5,7 @@
 #include "../libs/onewire/onewire.h"
 #include "../libs/pid/pid.h"
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <util/atomic.h>
@@ -14,9 +15,31 @@
 #define ATOMIC ATOMIC_BLOCK(ATOMIC_FORCEON)
 
 
+typedef struct
+{
+    const bool is_min;
+    pid_inout_t val;
+    clock_seconds_t when;
+} extremum_t;
+typedef struct
+{
+    bool ready;
+    extremum_t min, max;
+    pid_coeff_t p, i, d;
+} pid_tune_t;
+
+
 pid_inout_t g_setpoint = 0;
 struct PID_DATA g_pid;
-
+pid_tune_t g_pid_tune =
+{
+    .ready = false,
+    .min = {.is_min=true, .val=PID_INOUT_MAX, .when=0},
+    .max = {.is_min=false, .val=PID_INOUT_MIN, .when=0},
+    .p = 0,
+    .i = 0,
+    .d = 0,
+};
 
 void pid_config(pid_coeff_t p, pid_coeff_t i, pid_coeff_t d)
 {
@@ -43,7 +66,22 @@ pid_coeff_t to_pid_coeff(int8_t coeff)
 }
 
 
-pid_coeffs_t pid_tune_Zeigler_Nichols(void)
+bool pid_tune_finished(void)
+{
+    return g_pid_tune.ready;
+}
+
+
+void pid_get_coeffs(pid_coeff_t *p, pid_coeff_t *i, pid_coeff_t *d)
+{
+    assert(g_pid_tune.ready);
+    *p = g_pid_tune.p;
+    *i = g_pid_tune.i;
+    *d = g_pid_tune.d;
+}
+
+
+pid_inout_t pid_tune_Ziegler_Nichols(pid_inout_t proc_val, clock_seconds_t now)
 {
     // Replace the pid controlelr with a relay.
     // The relay has no hysteresis and acts as a sign function.
@@ -57,12 +95,12 @@ pid_coeffs_t pid_tune_Zeigler_Nichols(void)
 //    pid_destroy(pid);
     // Measure the gain Ku and the period Pu.
     // Consult the table in the literature.
-    pid_coeffs_t result;
-    return result;
+    pid_inout_t ctrl = 0;
+    return ctrl;
 }
 
 
-int pid_wait_to_settle(pid_inout_t proc_val, pid_inout_t critical, pid_inout_t treshold, clock_seconds_t now)
+pid_state_t pid_wait_to_settle(pid_inout_t proc_val, pid_inout_t critical, pid_inout_t treshold, clock_seconds_t now)
 {
     typedef struct
     {
@@ -98,3 +136,15 @@ int pid_wait_to_settle(pid_inout_t proc_val, pid_inout_t critical, pid_inout_t t
     else return PID_OSCILLATING;
 }
 
+
+pid_inout_t pid_onoff_controller(pid_inout_t proc_val, pid_inout_t sp, pid_inout_t ampl)
+{
+    if(proc_val > sp)
+    {
+        return 0;
+    }
+    else
+    {
+        return ampl;
+    }
+}
