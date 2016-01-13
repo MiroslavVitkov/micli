@@ -57,6 +57,7 @@ void task_pid_run(void)
             ctrl = 0;
             pid_coeff_t p, i, d;
             pid_get_coeffs(&p, &i, &d);
+            printf("Configuring pid with p=%i, i=%i, d=%i in 9s6 format." NEWLINE, p, i, d);
             pid_config(p, i, d);
             state = RUNNING;
             break;
@@ -71,27 +72,6 @@ void task_pid_run(void)
     zcd_set(cast);
 }
 
-
-void task_pid_tune(void)
-{
-    // Replace the pid controleler with a relay.
-    // The relay has no hysteresis and acts as a sign function.
-    // The amplitude of the relay is selected to be 100 decicelsius.
-    // The setpoint is selected to be 300 decicelsius.
-    // Consistent and symmetrical oscillations should be observed.
-    pid_inout_t setpoint = 300;
-    pid_inout_t ampl = 400;                      // i.e. 0C - 40C control signal
-    decicelsius_t tempr = tempr_get();
-    if(tempr > setpoint)
-    {
-        zcd_set(0);
-    }
-    else
-    {
-        zcd_set( to_zcd(ampl) );
-    }
-    // how do we measure resulting oscillation amplitude and period?
-}
 
 void task_report(void)
 {
