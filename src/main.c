@@ -36,6 +36,9 @@ void task_parse_cmd(void)
 
 void task_pid_run(void)
 {
+    static unsigned loop_counter = 0;
+    if(loop_counter++ % PID_CONTROL_LOOP_SECONDS) return;
+
     static enum state_e
     {
         TUNING,

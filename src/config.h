@@ -3,10 +3,10 @@
 
 #include <stdint.h>
 
-// If undefined, error checking on the XMODEM protocol is disabled.
-// Also, the flash writing routine is not protected form overwriting the bootloader section.
-// Furthermore, flash memory verification after write is not performed.
-#define ERROR_CHECKING
+// The main loop runs in 1 second.
+// As the pid control loop period determines a lot of the math,
+// it can be run at any integer number of seconds, from 1 to UINT16_MAX.
+#define PID_CONTROL_LOOP_SECONDS 60
 
 // CPU nominal frequency, Hz.
 #define F_CPU 8000000
