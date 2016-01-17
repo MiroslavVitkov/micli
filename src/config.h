@@ -22,7 +22,14 @@
 
 // Maximum temperature in 'decicelsius', that should not be exceeded.
 // Note that due to overshoot this can be exceeded by as much as 100 decicelsius.
-#define PROC_VAL_CRITICAL 600
+#define PROC_VAL_CRITICAL (550)
+
+// Control output is scaled to (MAX_TEMP-MIN_TEMP) and reported.
+// This way the pid algorithm operates in a consistend unit of measure:
+// 'decicelsius_t'.
+#define MIN_TEMPR (0)
+#define MAX_TEMPR (640)
+
 
 // Heater hardware
 #define PIN_HEATER  PD6

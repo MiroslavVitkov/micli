@@ -13,9 +13,15 @@
 #define abort() printf("CRITICAL ERROR")
 
 
-// TODO: move to pid_tune.
-decicelsius_t to_deci(zcd_proc_val_t val) {return (((int32_t)val * 640) / ZCD_PROC_VAL_MAX);}
-zcd_proc_val_t to_zcd(decicelsius_t val) {if (val < 0) return 0; else return (((int32_t)val * ZCD_PROC_VAL_MAX) / 640);}
+decicelsius_t to_deci(zcd_proc_val_t val)
+{
+    return (((int32_t)val * (MAX_TEMPR-MIN_TEMPR)) / ZCD_PROC_VAL_MAX);
+}
+zcd_proc_val_t to_zcd(decicelsius_t val)
+{
+    if (val < 0) return 0;
+    else return (((int32_t)val * ZCD_PROC_VAL_MAX) / (MAX_TEMPR-MIN_TEMPR));
+}
 
 
 void task_parse_cmd(void)
