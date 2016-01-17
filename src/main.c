@@ -70,6 +70,12 @@ void task_pid_run(void)
             break;
     }
 
+    if(proc_val >= PROC_VAL_CRITICAL)
+    {
+        printf("Process unstable!!!" NEWLINE);
+        ctrl = 0;
+    }
+
     // Cast [0, 640] decicelsius to [2^0, 2^16].
     zcd_proc_val_t cast = to_zcd(ctrl);
     zcd_set(cast);

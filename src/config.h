@@ -20,6 +20,11 @@
 // YOU MUST SET THIS MANUALLY IN THE MAKEFILE.
 // #define BOOTLOAD <byte_address>
 
+// Maximum temperature in 'decicelsius', that should not be exceeded.
+// Note that due to overshoot this can be exceeded by as much as 100 decicelsius.
+#define PROC_VAL_CRITICAL 600
+
+// Heater hardware
 #define PIN_HEATER  PD6
 #define PORT_HEATER PORTD
 #define DDR_HEATER  DDRD
