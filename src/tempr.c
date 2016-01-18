@@ -17,6 +17,25 @@
 static decicelsius_t g_temperature;
 
 
+// Start temperature measurement.
+// Before reading, we need to wait at least DS18B20_TCONV_12BIT == 750ms.
+void start_meas(void)
+{
+    error_t err = DS18X20_start_meas(DS18X20_POWER_EXTERN, NULL);
+    if(err != DS18X20_OK)  handle_error(ERROR_START_MEASUREMENT);
+}
+
+
+// Read temperature measurement.
+void read_tempr(void)
+{
+    decicelsius_t temperature;
+    error_t err = DS18X20_read_decicelsius_single(DS18S20_FAMILY_CODE, &temperature);
+    if(err != DS18X20_OK)  handle_error(ERROR_READ_TEMPERATURE);
+    g_temperature = temperature;
+}
+
+
 void tempr_init(void)
 {
     // Initialize the temperature sensor.
@@ -32,27 +51,18 @@ void tempr_init(void)
     {
         handle_error(ERROR_NO_DEVICE_FOUND);
     }
+
+    start_meas();
+    _delay_ms( DS18B20_TCONV_12BIT );
 }
 
 
 void tempr_measure(void)
 {
-    decicelsius_t temperature;
-
-    // Start temperature measurement.
-    error_t err = DS18X20_start_meas(DS18X20_POWER_EXTERN, NULL);
-    if(err != DS18X20_OK)
-    {
-        handle_error(ERROR_START_MEASUREMENT);
-    }
-    _delay_ms( DS18B20_TCONV_12BIT );  // 750ms
-    // Read temperature measurement.
-    err = DS18X20_read_decicelsius_single(DS18S20_FAMILY_CODE, &temperature);
-    if(err != DS18X20_OK)
-    {
-        handle_error(ERROR_READ_TEMPERATURE);
-    }
-    g_temperature = temperature;
+    // We assume more than 750ms have elapsed since measurement was started.
+    // We read to the global variable, then start the next measurement.
+    read_tempr();
+    start_meas();
 }
 
 
