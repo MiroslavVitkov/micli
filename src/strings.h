@@ -8,6 +8,9 @@ typedef enum
     STR_PROGRAM_START,
     STR_UNKNOWN_COMMAND,
     STR_TRIAC_CALIBRATION,
+    STR_JUMPING_TO_BOOTLOADER,
+    STR_PID_SETPOINT,
+    STR_COUNT_TOTAL__
 } strings_e;
 
 // Returns an SRAM buffer with the required string.

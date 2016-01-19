@@ -60,7 +60,7 @@ void cmd_help(char *cmdline, int bytes)
 
 void cmd_reprogram(char *cmdline, int bytes)
 {
-    printf("Jumping to bootloader in 3 seconds." NEWLINE);
+    printf( strings_get(STR_JUMPING_TO_BOOTLOADER) );
     _delay_ms(3000);
 
     typedef void (* fn_ptr_t) (void);
@@ -94,8 +94,7 @@ void cmd_pid_setpoint(char *cmdline, int bytes)
     cmdline[bytes] = '\0';
     int number = atoi(cmdline+sizeof("pid_setpoint"));
     pid_setpoint(number);
-    printf("PID setpoint is now %u decicelsius.", number);
-    printf(NEWLINE NEWLINE);
+    printf( strings_get(STR_PID_SETPOINT) , number);
 }
 
 
