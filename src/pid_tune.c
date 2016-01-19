@@ -100,12 +100,12 @@ pid_inout_t pid_tune_Ziegler_Nichols(pid_inout_t proc_val, clock_seconds_t now)
 {
     assert(!g_pid_tune.ready);
 
-    const pid_inout_t relay_ampl = 500;
+    const pid_inout_t relay_ampl = 400;
     pid_inout_t ctrl = pid_onoff_controller(proc_val, 300, relay_ampl);
     pid_state_t osc = pid_wait_to_settle(proc_val, 600, 10, now);
     assert(osc == OSCILLATING);
 
-    clock_seconds_t patience = 600;
+    clock_seconds_t patience = 60;
     if(now > patience)
     {
         g_pid_tune.ready = true;
@@ -119,19 +119,6 @@ pid_inout_t pid_tune_Ziegler_Nichols(pid_inout_t proc_val, clock_seconds_t now)
     }
 
     return ctrl;
-
-    // Replace the pid controlelr with a relay.
-    // The relay has no hysteresis and acts as a sign function.
-    // The amplitude of the relay is selected to be 100 decicelsius.
-    // The setpoint is selected to be 300 decicelsius.
-    // Consistent and symmetrical oscillations should be observed.
-
-    // Set P, I and D gains to 0.
-    // Increase P until the output performs sustained oscilaltions.
-//    void *pid = pid_create(0, 0, 0);
-//    pid_destroy(pid);
-    // Measure the gain Ku and the period Pu.
-    // Consult the table in the literature.
 }
 
 
