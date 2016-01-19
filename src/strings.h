@@ -4,15 +4,15 @@
 
 typedef enum
 {
-    STR_HELP,
-    STR_PROGRAM_START,
-    STR_UNKNOWN_COMMAND,
-    STR_TRIAC_CALIBRATION,
-    STR_JUMPING_TO_BOOTLOADER,
-    STR_PID_SETPOINT,
-    STR_PID_CALIBRATION,
-    STR_TRIAC_OUTPUT,
-    STR_PROCESS_UNSTABLE,
+    STR_HELP                    = 0,
+    STR_PROGRAM_START           = 1,
+    STR_UNKNOWN_COMMAND         = 2,
+    STR_TRIAC_CALIBRATION       = 3,
+    STR_JUMPING_TO_BOOTLOADER   = 4,
+    STR_PID_SETPOINT            = 5,
+    STR_PID_CALIBRATION         = 6,
+    STR_TRIAC_OUTPUT            = 7,
+    STR_PROCESS_UNSTABLE        = 8,
     STR_COUNT_TOTAL__
 } strings_e;
 

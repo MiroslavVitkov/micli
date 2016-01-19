@@ -105,7 +105,7 @@ pid_inout_t pid_tune_Ziegler_Nichols(pid_inout_t proc_val, clock_seconds_t now)
     pid_state_t osc = pid_wait_to_settle(proc_val, 600, 10, now);
     assert(osc == OSCILLATING);
 
-    clock_seconds_t patience = 60;
+    clock_seconds_t patience = 20;
     if(now > patience)
     {
         g_pid_tune.ready = true;
