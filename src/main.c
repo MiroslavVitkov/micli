@@ -67,7 +67,7 @@ void task_pid_run(void)
             ctrl = 0;
             pid_coeff_t p, i, d;
             pid_get_coeffs(&p, &i, &d);
-            printf("Configuring pid with p=%i, i=%i, d=%i in 9s6 format." NEWLINE, p, i, d);
+            printf( strings_get(STR_PID_CALIBRATION), p, i, d );
             pid_config(p, i, d);
             state = RUNNING;
             break;
@@ -79,7 +79,7 @@ void task_pid_run(void)
 
     if(proc_val >= PROC_VAL_CRITICAL)
     {
-        printf("Process unstable!!!" NEWLINE);
+        printf( strings_get(STR_PROCESS_UNSTABLE) );
         ctrl = 0;
     }
 

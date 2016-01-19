@@ -84,7 +84,6 @@ void cmd_pid_coeffs(char *cmdline, int bytes)
 
     // Unsofrunately, we support only integer gains currently.
     pid_config( to_pid_coeff(num[0]), to_pid_coeff(num[1]), to_pid_coeff(num[2]) );
-    printf("P = %i, I = %i, D = %i.", num[0], num[1], num[2]);
     printf(NEWLINE NEWLINE);
 }
 
@@ -103,8 +102,7 @@ void cmd_zcd_set(char *cmdline, int bytes)
     cmdline[bytes] = '\0';
     int number = atoi(cmdline+sizeof("zcd_run"));
     zcd_set(number);
-    printf("Triac output configuread at %u from %u.", number, ZCD_PROC_VAL_MAX);
-    printf(NEWLINE NEWLINE);
+    printf( strings_get(STR_TRIAC_OUTPUT), number, ZCD_PROC_VAL_MAX);
 }
 
 

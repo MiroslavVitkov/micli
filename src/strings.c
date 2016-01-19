@@ -29,6 +29,16 @@ const char string_5[] PROGMEM =
 const char string_6[] =
     "PID setpoint is now %u decicelsius." NEWLINE NEWLINE;
 
+const char string_7[] =
+    "Configuring pid with p=%i, i=%i, d=%i in 9s6 format." NEWLINE;
+
+const char string_8[] =
+    "Triac output configuread at %u from %u." NEWLINE NEWLINE;
+
+const char string_9[] =
+    "Process unstable!!!" NEWLINE;
+
+
 PGM_P const g_strings_table[STR_COUNT_TOTAL__] PROGMEM =
 {
     string_1,
@@ -37,6 +47,9 @@ PGM_P const g_strings_table[STR_COUNT_TOTAL__] PROGMEM =
     string_4,
     string_5,
     string_6,
+    string_7,
+    string_8,
+    string_9,
 };
 
 const char* strings_get(strings_e n)
