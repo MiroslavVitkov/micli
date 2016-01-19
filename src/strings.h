@@ -5,7 +5,9 @@
 typedef enum
 {
     STR_HELP,
-    STR_ASECONDEXAMPLE,
+    STR_PROGRAM_START,
+    STR_UNKNOWN_COMMAND,
+    STR_TRIAC_CALIBRATION,
 } strings_e;
 
 // Returns an SRAM buffer with the required string.

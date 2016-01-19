@@ -12,13 +12,19 @@ char g_strings_buff[MAX_STR_LEN];
 
 const char string_1[] PROGMEM =
     "Commands have the format:" NEWLINE
-;//    "!command parameters ENTER" NEWLINE
-//    "Parameters are separated by spaces." NEWLINE
-//    "Total line length must not exceed    characters." NEWLINE;
+    "!command parameters ENTER" NEWLINE
+    "Parameters are separated by spaces." NEWLINE
+    "Total line length must not exceed %i characters." NEWLINE;
 
-const char string_2[] PROGMEM = "String 2";
-const char string_3[] PROGMEM = "String 3";
-const char string_4[] PROGMEM = "String 4";
+const char string_2[] PROGMEM =
+    "Program start!" NEWLINE;
+
+const char string_3[] PROGMEM =
+    "Unknown command: %s." NEWLINE;
+
+const char string_4[] PROGMEM =
+    "Running triac with calibration of %li us." NEWLINE;
+
 const char string_5[] PROGMEM = "String 5";
 
 PGM_P const g_strings_table[] PROGMEM =

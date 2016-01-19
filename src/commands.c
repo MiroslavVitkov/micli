@@ -46,8 +46,7 @@ const command_t Commands[] =
 // Command handlers.
 void cmd_help(char *cmdline, int bytes)
 {
-    const char *buff = strings_get(STR_HELP);
-    printf("%s", buff/*, MAX_CMD_LEN*/);
+    printf( strings_get(STR_HELP), MAX_CMD_LEN );
 
     const command_t *it = Commands;
     const command_t *it_end = Commands + (sizeof(Commands) / sizeof(command_t));

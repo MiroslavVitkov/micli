@@ -35,7 +35,7 @@ void task_parse_cmd(void)
         if(err)
         {
             cmd_buff[len] = '\0';
-            printf("Unknown command: %s." NEWLINE, cmd_buff);
+            printf( strings_get(STR_UNKNOWN_COMMAND), cmd_buff );
         }
     }
 }
@@ -111,7 +111,7 @@ void main(void)
     tempr_init();
     zcd_init();
 
-    printf("Program start." NEWLINE);
+    printf( strings_get(STR_PROGRAM_START) );
     for( ; ; clock_sleep_until_next_second() )
     {
         task_parse_cmd();

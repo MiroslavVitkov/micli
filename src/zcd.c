@@ -1,4 +1,5 @@
 #include "config.h"
+#include "strings.h"
 #include "usart.h"
 #include "zcd.h"
 
@@ -131,7 +132,7 @@ void zcd_init(void)
     zcd_time_t zcd_calibration = zcd_calibrate();
     zcd_set(0);
     zcd_run(zcd_calibration);
-    printf("Running triac with calibration of %li us." NEWLINE, zcd_calibration / (F_CPU / 1000000));
+    printf( strings_get(STR_TRIAC_CALIBRATION), zcd_calibration / (F_CPU / 1000000) );
 }
 
 
