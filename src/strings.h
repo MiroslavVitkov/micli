@@ -4,7 +4,7 @@
 
 typedef enum
 {
-    STR_EXAMPLE,
+    STR_HELP,
     STR_ASECONDEXAMPLE,
 } strings_e;
 

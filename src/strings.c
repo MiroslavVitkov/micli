@@ -1,4 +1,5 @@
 #include "strings.h"
+#include "usart.h"
 
 #include <avr/pgmspace.h>
 
@@ -9,7 +10,12 @@
 // Holds a copy of the last string requested.
 char g_strings_buff[MAX_STR_LEN];
 
-const char string_1[] PROGMEM = "String 1";
+const char string_1[] PROGMEM =
+    "Commands have the format:" NEWLINE
+;//    "!command parameters ENTER" NEWLINE
+//    "Parameters are separated by spaces." NEWLINE
+//    "Total line length must not exceed    characters." NEWLINE;
+
 const char string_2[] PROGMEM = "String 2";
 const char string_3[] PROGMEM = "String 3";
 const char string_4[] PROGMEM = "String 4";

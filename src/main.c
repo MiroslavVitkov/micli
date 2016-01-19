@@ -112,10 +112,6 @@ void main(void)
     zcd_init();
 
     printf("Program start." NEWLINE);
-const char* buff = strings_get(0);
-printf("%s" NEWLINE, buff);
-buff = strings_get(1);
-printf("%s" NEWLINE, buff);
     for( ; ; clock_sleep_until_next_second() )
     {
         task_parse_cmd();

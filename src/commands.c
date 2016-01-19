@@ -1,6 +1,7 @@
 #include "commands.h"
 #include "config.h"
 #include "pid_tune.h"
+#include "strings.h"
 #include "usart.h"
 #include "zcd.h"
 
@@ -45,9 +46,8 @@ const command_t Commands[] =
 // Command handlers.
 void cmd_help(char *cmdline, int bytes)
 {
-    printf("Commands have the format:" NEWLINE);
-    printf("!command parameters ENTER" NEWLINE);
-    printf("Parameters are separated by spaces; total line length must not exceed %i characters." NEWLINE, MAX_CMD_LEN);
+    const char *buff = strings_get(STR_HELP);
+    printf("%s", buff/*, MAX_CMD_LEN*/);
 
     const command_t *it = Commands;
     const command_t *it_end = Commands + (sizeof(Commands) / sizeof(command_t));
