@@ -98,7 +98,6 @@ void pid_get_coeffs(pid_coeff_t *p, pid_coeff_t *i, pid_coeff_t *d)
 // Second method of Ziegler-Nichols
 pid_inout_t pid_tune_Ziegler_Nichols(pid_inout_t proc_val, clock_seconds_t now)
 {
-printf("zn"NEWLINE);
     assert(!g_pid_tune.ready);
 
     pid_inout_t ctrl;
@@ -131,6 +130,7 @@ printf("zn"NEWLINE);
         g_pid_tune.p = 6 * Ku;  // decicelsius?
         g_pid_tune.i = g_pid_tune.p / (5 * Tu);
         g_pid_tune.d = g_pid_tune.p / (1 * Tu);
+printf("NOW max = %i at %lu, min = %i at %lu" NEWLINE, g_pid_tune.max.val, g_pid_tune.max.when, g_pid_tune.min.val, g_pid_tune.min.when);
     }
 
     return ctrl;
@@ -157,12 +157,12 @@ pid_state_t pid_wait_to_settle(pid_inout_t proc_val, pid_inout_t critical, pid_i
     extremum_t **curr = &g_pid_tune.curr;
     extremum_t **prev = &g_pid_tune.prev;
 
-    if(*prev == min)
+    if(*curr == min)
     {
         // Look for a maximum.
         if(proc_val > (*max).val)
         {
-            (*max).val = proc_val;
+//            (*max).val = proc_val;
             (*max).when = now;
             *curr = max;
             *prev = min;
@@ -172,14 +172,15 @@ pid_state_t pid_wait_to_settle(pid_inout_t proc_val, pid_inout_t critical, pid_i
     {
         if(proc_val < (*min).val)
         {
-            (*min).val = proc_val;
+//            (*min).val = proc_val;
             (*min).when = now;
             *curr = min;
             *prev = max;
         }
     }
 
+//printf("proc_val=%i,  max = %i, min = %i" NEWLINE, proc_val, g_pid_tune.max.val, g_pid_tune.min.val);
     if(proc_val >= critical)  return UNSTABLE;
-    else if((*max).val - (*min).val < treshold)  return SETTLED;
+    else if((*min).val + treshold < (*max).val)  return SETTLED;
     else return OSCILLATING;
 }
