@@ -117,7 +117,8 @@ pid_inout_t pid_tune_Ziegler_Nichols(pid_inout_t proc_val, clock_seconds_t now)
     }
 
     pid_state_t osc = pid_wait_to_settle(proc_val, 600, 10, now);
-    assert(osc == OSCILLATING);
+    (void)osc;
+//    assert(osc == OSCILLATING);  // we don't have asserts yet i.e. just hangs
 
     clock_seconds_t patience = 600;
     if(now > patience)
@@ -162,7 +163,7 @@ pid_state_t pid_wait_to_settle(pid_inout_t proc_val, pid_inout_t critical, pid_i
         // Look for a maximum.
         if(proc_val > (*max).val)
         {
-//            (*max).val = proc_val;
+            (*max).val = proc_val;
             (*max).when = now;
             *curr = max;
             *prev = min;
@@ -172,14 +173,13 @@ pid_state_t pid_wait_to_settle(pid_inout_t proc_val, pid_inout_t critical, pid_i
     {
         if(proc_val < (*min).val)
         {
-//            (*min).val = proc_val;
+            (*min).val = proc_val;
             (*min).when = now;
             *curr = min;
             *prev = max;
         }
     }
 
-//printf("proc_val=%i,  max = %i, min = %i" NEWLINE, proc_val, g_pid_tune.max.val, g_pid_tune.min.val);
     if(proc_val >= critical)  return UNSTABLE;
     else if((*min).val + treshold < (*max).val)  return SETTLED;
     else return OSCILLATING;
