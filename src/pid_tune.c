@@ -98,14 +98,29 @@ void pid_get_coeffs(pid_coeff_t *p, pid_coeff_t *i, pid_coeff_t *d)
 // Second method of Ziegler-Nichols
 pid_inout_t pid_tune_Ziegler_Nichols(pid_inout_t proc_val, clock_seconds_t now)
 {
+printf("zn"NEWLINE);
     assert(!g_pid_tune.ready);
 
+    pid_inout_t ctrl;
+
+    // Evaluate relay control only each PID_CONTROL_LOOP_SECONDS.
     const pid_inout_t relay_ampl = 400;
-    pid_inout_t ctrl = pid_onoff_controller(proc_val, 300, relay_ampl);
+    static unsigned loop_counter = 0;
+    static pid_inout_t prev_ctrl = 0;
+    if(loop_counter++ % PID_CONTROL_LOOP_SECONDS)
+    {
+        ctrl = prev_ctrl;
+    }
+    else
+    {
+        ctrl = pid_onoff_controller(proc_val, 300, relay_ampl);
+        prev_ctrl = ctrl;
+    }
+
     pid_state_t osc = pid_wait_to_settle(proc_val, 600, 10, now);
     assert(osc == OSCILLATING);
 
-    clock_seconds_t patience = 20;
+    clock_seconds_t patience = 600;
     if(now > patience)
     {
         g_pid_tune.ready = true;

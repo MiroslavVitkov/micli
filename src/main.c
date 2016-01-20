@@ -53,6 +53,15 @@ void task_pid_run(void)
     pid_inout_t proc_val = (pid_inout_t)tempr_get();
     pid_inout_t ctrl = 0;
 
+    // Safety.
+    if(proc_val >= PROC_VAL_CRITICAL)
+    {
+        printf( strings_get(STR_PROCESS_UNSTABLE) );
+        zcd_proc_val_t cast = to_zcd(0);
+        zcd_set(cast);
+        return;
+    }
+
     switch(state)
     {
         case TUNING:
@@ -77,17 +86,6 @@ void task_pid_run(void)
 
     // Cast [0, 640] decicelsius to [2^0, 2^16].
     zcd_proc_val_t cast = to_zcd(ctrl);
-
-    // Safety.
-    if(proc_val >= PROC_VAL_CRITICAL)
-    {
-        printf( strings_get(STR_PROCESS_UNSTABLE) );
-        cast = to_zcd(0);
-        zcd_set(cast);
-    }
-
-    static unsigned loop_counter = 0;
-    if(loop_counter++ % PID_CONTROL_LOOP_SECONDS) return;
     zcd_set(cast);
 }
 
