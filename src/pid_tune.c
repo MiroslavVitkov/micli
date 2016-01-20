@@ -156,29 +156,36 @@ pid_state_t pid_wait_to_settle(pid_inout_t proc_val, pid_inout_t critical, pid_i
     extremum_t *min = &g_pid_tune.min;
     extremum_t *max = &g_pid_tune.max;
     extremum_t **curr = &g_pid_tune.curr;
-    extremum_t **prev = &g_pid_tune.prev;
+    extremum_t **prev_ = &g_pid_tune.prev;
+
+    static pid_inout_t prev, prevprev;
 
     if(*curr == min)
     {
-        // Look for a maximum.
-        if(proc_val > (*max).val)
+        // Look for a local maximum.
+        if(prevprev <= prev && prev > proc_val)
         {
             (*max).val = proc_val;
             (*max).when = now;
             *curr = max;
-            *prev = min;
+            *prev_ = min;
+printf("new max: %i %lu" NEWLINE, (*max).val, (*max).when);
         }
     }
     else
     {
-        if(proc_val < (*min).val)
+        if(prevprev >= prev && prev < proc_val)
         {
             (*min).val = proc_val;
             (*min).when = now;
             *curr = min;
-            *prev = max;
+            *prev_ = max;
+printf("new min: %i %lu" NEWLINE, (*min).val, (*min).when);
         }
     }
+
+    prevprev = prev;
+    prev = proc_val;
 
     if(proc_val >= critical)  return UNSTABLE;
     else if((*min).val + treshold < (*max).val)  return SETTLED;
