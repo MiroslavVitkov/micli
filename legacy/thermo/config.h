@@ -1,0 +1,35 @@
+#ifndef THERMO_CONFIG_H_
+#define THERMO_CONFIG_H_
+
+//cpu
+#define F_CPU 8000000
+
+//thermometer
+#define DS18X20_EEPROMSUPPORT     0
+#define DS18X20_DECICELSIUS       1
+#define DS18X20_MAX_RESOLUTION    0
+#define DS18X20_VERBOSE           0
+
+#define OW_ONE_BUS
+#define OW_PIN  PB6
+#define OW_IN   PINB
+#define OW_OUT  PORTB
+#define OW_DDR  DDRB
+
+#define HEARTHBEAT_PIN PB0
+#define HEARTHBEAT_PINPORT PINB
+#define HEARTHBEAT_PORT PORTB
+#define HEARTHBEAT_DDR DDRB
+
+#define ERROR_PIN PD7
+#define ERROR_PINPORT PIND
+#define ERROR_PORT PORTD
+#define ERROR_DDR DDRD
+
+#define HEATER1_PIN PD6
+#define HEATER1_PINPORT PIND
+#define HEATER1_PORT PORTD
+#define HEATER1_DDR DDRD
+
+
+#endif	//#ifndef THERMO_CONFIG_H_
