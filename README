@@ -1,0 +1,8 @@
+MIcroCLImate controller
+
+In this project:
+  - firmware for an atmega168
+  - Ziegler-Nichols PID tuning
+  - absolutely minimal zero cross detector
+  - interfacing digital thermometers on a OneWire bus
+  - triac switch for 220VAC via logic levels
